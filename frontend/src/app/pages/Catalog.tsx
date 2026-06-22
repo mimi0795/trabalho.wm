@@ -71,7 +71,7 @@ export function Catalog() {
   const FilterPanel = () => (
     <div className="space-y-6">
       {activeFilterCount > 0 && (
-        <button onClick={clearAll} className="flex items-center gap-2 px-3 py-1.5 rounded-full" style={{ background: 'rgba(255,45,85,0.1)', color: '#FF2D55', fontSize: '13px', fontWeight: 600 }}>
+        <button onClick={clearAll} className="flex items-center gap-2 px-3 py-1.5 rounded-sm" style={{ background: 'rgba(180,35,42,0.08)', color: 'var(--brand-error)', fontSize: '13px', fontWeight: 600 }}>
           <X size={14} /> Clear all ({activeFilterCount})
         </button>
       )}

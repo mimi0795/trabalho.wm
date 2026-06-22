@@ -29,7 +29,7 @@ export function Login() {
       {/* Left panel – desktop */}
       <div
         className="hidden lg:flex flex-col justify-between w-1/2 p-12 relative overflow-hidden"
-        style={{ background: '#0D0D0D' }}
+        style={{ background: '#111111' }}
       >
         <img
           src="https://images.unsplash.com/photo-1564864265033-8f50f3e0e3be?w=1000&q=80"
@@ -39,7 +39,7 @@ export function Login() {
         <div className="relative">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-xl bg-white flex items-center justify-center">
-              <span style={{ color: '#0D0D0D', fontSize: '13px', fontWeight: 900, fontFamily: 'Satoshi, sans-serif', letterSpacing: '-0.05em' }}>SX</span>
+              <span style={{ color: '#111111', fontSize: '13px', fontWeight: 900, fontFamily: 'Satoshi, sans-serif', letterSpacing: '-0.05em' }}>SX</span>
             </div>
             <span style={{ color: 'white', fontSize: '18px', fontWeight: 800, letterSpacing: '-0.04em', fontFamily: 'Satoshi, sans-serif' }}>SNEAKRX</span>
           </div>

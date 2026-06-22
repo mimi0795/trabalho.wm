@@ -37,7 +37,7 @@ export function Profile() {
     <div className="min-h-screen" style={{ background: 'var(--background)' }}>
       <div className="max-w-lg mx-auto px-5 py-6">
         {/* Profile card */}
-        <div className="relative overflow-hidden rounded-3xl mb-6 p-6" style={{ background: '#0D0D0D' }}>
+        <div className="relative overflow-hidden rounded-3xl mb-6 p-6" style={{ background: '#111111' }}>
           <img
             src="https://images.unsplash.com/photo-1618554707482-14854a29f955?w=600&q=80"
             alt=""
@@ -58,7 +58,7 @@ export function Profile() {
                   </p>
                   <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '13px' }}>{state.user?.email}</p>
                   <div className="flex items-center gap-1.5 mt-1.5">
-                    <span className="px-2.5 py-1 rounded-full" style={{ background: 'rgba(170,255,0,0.15)', color: '#AAFF00', fontSize: '11px', fontWeight: 700 }}>
+                    <span className="px-2.5 py-1 rounded-sm" style={{ background: 'rgba(184,154,77,0.16)', color: '#E7E4DF', fontSize: '11px', fontWeight: 700 }}>
                       ✦ Premium Member
                     </span>
                   </div>
@@ -168,7 +168,7 @@ export function Profile() {
             whileTap={{ scale: 0.97 }}
             onClick={() => dispatch({ type: 'LOGOUT' })}
             className="w-full h-12 rounded-2xl flex items-center justify-center gap-2 mt-6"
-            style={{ background: 'rgba(255,45,85,0.1)', color: '#FF2D55', fontSize: '15px', fontWeight: 700, border: '1px solid rgba(255,45,85,0.2)' }}
+            style={{ background: 'rgba(180,35,42,0.08)', color: 'var(--brand-error)', fontSize: '15px', fontWeight: 700, border: '1px solid rgba(180,35,42,0.18)' }}
           >
             <LogOut size={18} /> Sign Out
           </motion.button>

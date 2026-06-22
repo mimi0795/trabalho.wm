@@ -12,7 +12,7 @@ const slides = [
     headline: 'The Rarest\nSneakers,\nAll in One Place',
     body: 'Thousands of exclusive drops from Nike, Jordan, Adidas and more — authenticated and ready to ship.',
     icon: Shield,
-    accent: '#0055FF',
+    accent: '#1F3A5F',
   },
   {
     id: 1,
@@ -21,7 +21,7 @@ const slides = [
     headline: 'Never Miss\na Release\nAgain',
     body: 'Real-time alerts for limited drops. Secure checkout in under 30 seconds. Be first in line, every time.',
     icon: Zap,
-    accent: '#AAFF00',
+    accent: '#B89A4D',
   },
   {
     id: 2,
@@ -30,7 +30,7 @@ const slides = [
     headline: 'Delivered in\n24 Hours,\nAuthenticated',
     body: '100% verified authentic. Ships in premium packaging with certificate of authenticity included.',
     icon: Truck,
-    accent: '#FF2D55',
+    accent: '#167A4A',
   },
 ];
 
@@ -55,7 +55,7 @@ export function Onboarding() {
   const slide = slides[current];
 
   return (
-    <div className="fixed inset-0 overflow-hidden" style={{ background: '#0D0D0D' }}>
+    <div className="fixed inset-0 overflow-hidden" style={{ background: '#111111' }}>
       <AnimatePresence mode="wait">
         <motion.div
           key={slide.id}
@@ -76,7 +76,7 @@ export function Onboarding() {
           </div>
 
           {/* Gradient overlay */}
-          <div className="absolute inset-0 bg-gradient-to-t from-[#0D0D0D] via-[#0D0D0D]/60 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#111111] via-[#111111]/60 to-transparent" />
 
           {/* Content */}
           <div className="absolute inset-0 flex flex-col justify-between p-8" style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 56px)', paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 40px)' }}>
@@ -87,7 +87,7 @@ export function Onboarding() {
                   className="w-8 h-8 rounded-xl flex items-center justify-center"
                   style={{ background: 'white' }}
                 >
-                  <span style={{ color: '#0D0D0D', fontSize: '13px', fontWeight: 900, fontFamily: 'Satoshi, sans-serif', letterSpacing: '-0.05em' }}>SX</span>
+                  <span style={{ color: '#111111', fontSize: '13px', fontWeight: 900, fontFamily: 'Satoshi, sans-serif', letterSpacing: '-0.05em' }}>SX</span>
                 </div>
                 <span style={{ color: 'white', fontSize: '18px', fontWeight: 800, letterSpacing: '-0.04em', fontFamily: 'Satoshi, sans-serif' }}>SNEAKRX</span>
               </div>

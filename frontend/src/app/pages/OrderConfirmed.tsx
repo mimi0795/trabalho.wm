@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router';
+import { useNavigate, useSearchParams } from 'react-router';
 import { motion } from 'motion/react';
 import { CheckCircle, Package, Truck, Home, ArrowRight } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
 export function OrderConfirmed() {
   const navigate = useNavigate();
-  const orderNumber = `SNX-${Math.random().toString(36).toUpperCase().slice(2, 9)}`;
+  const [searchParams] = useSearchParams();
+  const orderNumber = searchParams.get('order') || sessionStorage.getItem('lastOrderId') || `SNX-${Math.random().toString(36).toUpperCase().slice(2, 9)}`;
   const [step, setStep] = useState(0);
 
   useEffect(() => {
@@ -15,7 +16,7 @@ export function OrderConfirmed() {
         particleCount: 120,
         spread: 80,
         origin: { y: 0.5 },
-        colors: ['#0055FF', '#AAFF00', '#FF2D55', '#FFFFFF'],
+        colors: ['#1F3A5F', '#B89A4D', '#167A4A', '#FFFFFF'],
       });
     }, 600);
 

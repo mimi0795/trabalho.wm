@@ -21,7 +21,7 @@ export function Wishlist() {
               className="w-24 h-24 rounded-full flex items-center justify-center mb-6"
               style={{ background: 'rgba(255,45,85,0.08)' }}
             >
-              <Heart size={40} style={{ color: '#FF2D55' }} />
+              <Heart size={40} style={{ color: 'var(--brand-error)' }} />
             </motion.div>
             <h2 style={{ fontFamily: 'Satoshi, sans-serif' }}>Your wishlist is empty</h2>
             <p style={{ color: 'var(--foreground-muted)', fontSize: '15px', marginTop: 8, marginBottom: 24 }}>
@@ -45,7 +45,7 @@ export function Wishlist() {
               <button
                 onClick={() => state.wishlist.forEach(id => toggleWishlist(id))}
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-full"
-                style={{ background: 'rgba(255,45,85,0.08)', color: '#FF2D55', fontSize: '13px', fontWeight: 600 }}
+                style={{ background: 'rgba(180,35,42,0.08)', color: 'var(--brand-error)', fontSize: '13px', fontWeight: 600 }}
               >
                 <Trash2 size={13} /> Clear all
               </button>

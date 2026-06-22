@@ -57,14 +57,6 @@ export function BottomNav() {
                     strokeWidth={isActive ? 2.5 : 1.75}
                     style={{ color: isActive ? 'var(--brand-accent)' : 'var(--foreground-muted)' }}
                   />
-                  {label === 'Saved' && cartCount > 0 && (
-                    <span
-                      className="absolute -top-1.5 -right-1.5 min-w-4 h-4 rounded-full flex items-center justify-center text-white"
-                      style={{ fontSize: '9px', fontWeight: 700, background: 'var(--brand-accent)', padding: '0 3px' }}
-                    >
-                      {cartCount}
-                    </span>
-                  )}
                 </div>
                 <span
                   className="relative"
@@ -97,7 +89,7 @@ export function BottomNav() {
               {cartCount > 0 && (
                 <span
                   className="absolute -top-1.5 -right-1.5 min-w-4 h-4 rounded-full flex items-center justify-center text-white"
-                  style={{ fontSize: '9px', fontWeight: 700, background: '#FF2D55', padding: '0 3px' }}
+                  style={{ fontSize: '9px', fontWeight: 700, background: 'var(--brand-error)', padding: '0 3px' }}
                 >
                   {cartCount}
                 </span>

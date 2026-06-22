@@ -1,11 +1,44 @@
 
-  # Premium Sneaker Ecommerce App
+# Premium Sneaker Ecommerce App
 
-  This is a code bundle for Premium Sneaker Ecommerce App. The original project is available at https://www.figma.com/design/ZN5vzvPiX96skYn07Vqoqj/Premium-Sneaker-Ecommerce-App.
+This project is split into two workspaces:
 
-  ## Running the code
+- `frontend`: Vite + React ecommerce app.
+- `backend`: Node.js API server.
 
-  Run `npm i` to install the dependencies.
+## Running the code
 
-  Run `npm run dev` to start the development server.
-  
+Install dependencies from the project root:
+
+```bash
+npm install
+```
+
+Start the frontend:
+
+```bash
+npm run dev
+```
+
+Start the backend:
+
+```bash
+npm run dev:backend
+```
+
+The backend API runs on `http://localhost:5000/api` by default.
+
+Available API routes:
+
+- `GET /api/health`
+- `GET /api/products`
+- `GET /api/products/:id`
+- `POST /api/orders`
+- `GET /api/orders`
+- `POST /api/newsletter`
+
+Build the frontend:
+
+```bash
+npm run build
+```

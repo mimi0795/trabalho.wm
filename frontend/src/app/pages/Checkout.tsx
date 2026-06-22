@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router';
 import { motion, AnimatePresence } from 'motion/react';
 import { CreditCard, Smartphone, Building2, ChevronRight, Check } from 'lucide-react';
 import { useApp } from '../store/AppContext';
+import { api, cartItemsToOrderItems } from '../lib/api';
 
 const STEPS = ['Address', 'Shipping', 'Payment', 'Review'] as const;
 type Step = typeof STEPS[number];
@@ -10,6 +11,7 @@ type Step = typeof STEPS[number];
 export function Checkout() {
   const [step, setStep] = useState<Step>('Address');
   const [loading, setLoading] = useState(false);
+  const [orderError, setOrderError] = useState('');
   const { state, cartTotal, dispatch } = useApp();
   const navigate = useNavigate();
 
@@ -31,9 +33,29 @@ export function Checkout() {
 
   const handlePlaceOrder = async () => {
     setLoading(true);
-    await new Promise(r => setTimeout(r, 1800));
-    dispatch({ type: 'CLEAR_CART' });
-    navigate('/order-confirmed');
+    setOrderError('');
+
+    try {
+      const { order } = await api.createOrder({
+        customer: {
+          name: address.name || state.user?.name || 'Guest Customer',
+          email: state.user?.email || 'guest@sneakrx.test',
+        },
+        address,
+        shippingMethod,
+        paymentMethod,
+        items: cartItemsToOrderItems(state.cart),
+      });
+
+      sessionStorage.setItem('lastOrderId', order.id);
+      sessionStorage.setItem('lastOrderTotal', String(order.totals.total));
+      dispatch({ type: 'CLEAR_CART' });
+      navigate(`/order-confirmed?order=${order.id}`);
+    } catch (error) {
+      setOrderError(error instanceof Error ? error.message : 'Could not place order');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const inputStyle = {
@@ -270,6 +292,11 @@ export function Checkout() {
                   </>
                 )}
               </motion.button>
+              {orderError && (
+                <p className="mt-3 text-center" style={{ color: 'var(--brand-error)', fontSize: '12px', fontWeight: 600 }}>
+                  {orderError}
+                </p>
+              )}
             </div>
           </div>
         </div>

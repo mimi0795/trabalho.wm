@@ -83,10 +83,10 @@ export function ProductDetail() {
                   <span className="px-3 py-1.5 rounded-full text-white" style={{ fontSize: '11px', fontWeight: 700, background: 'var(--brand-accent)', letterSpacing: '0.04em' }}>NEW</span>
                 )}
                 {product.isExclusive && (
-                  <span className="px-3 py-1.5 rounded-full" style={{ fontSize: '11px', fontWeight: 700, background: 'rgba(0,0,0,0.8)', color: '#AAFF00', letterSpacing: '0.04em' }}>EXCLUSIVE</span>
+                  <span className="px-3 py-1.5 rounded-sm" style={{ fontSize: '11px', fontWeight: 700, background: 'rgba(17,17,17,0.82)', color: '#E7E4DF', letterSpacing: '0.06em' }}>PREMIUM</span>
                 )}
                 {discount > 0 && (
-                  <span className="px-3 py-1.5 rounded-full text-white" style={{ fontSize: '11px', fontWeight: 700, background: '#FF2D55' }}>-{discount}%</span>
+                  <span className="px-3 py-1.5 rounded-sm text-white" style={{ fontSize: '11px', fontWeight: 700, background: 'var(--brand-error)' }}>-{discount}%</span>
                 )}
               </div>
 
@@ -156,8 +156,8 @@ export function ProductDetail() {
                 >
                   <Heart
                     size={16}
-                    fill={inWishlist ? '#FF2D55' : 'none'}
-                    stroke={inWishlist ? '#FF2D55' : 'currentColor'}
+                    fill={inWishlist ? 'var(--brand-error)' : 'none'}
+                    stroke={inWishlist ? 'var(--brand-error)' : 'currentColor'}
                     strokeWidth={2}
                   />
                 </motion.button>
@@ -189,7 +189,7 @@ export function ProductDetail() {
                   <span style={{ fontSize: '1.25rem', color: 'var(--foreground-muted)', textDecoration: 'line-through' }}>
                     ${product.originalPrice}
                   </span>
-                  <span className="px-2.5 py-1 rounded-full text-white" style={{ fontSize: '12px', fontWeight: 700, background: '#FF2D55' }}>
+                  <span className="px-2.5 py-1 rounded-sm text-white" style={{ fontSize: '12px', fontWeight: 700, background: 'var(--brand-error)' }}>
                     Save ${product.originalPrice - product.price}
                   </span>
                 </>
@@ -240,7 +240,7 @@ export function ProductDetail() {
                       color: selectedSize === size ? 'var(--background)' : 'var(--foreground)',
                       fontSize: '14px',
                       fontWeight: 700,
-                      border: `1.5px solid ${selectedSize === size ? 'var(--foreground)' : showSizeError ? '#FF2D55' : 'var(--border)'}`,
+                      border: `1.5px solid ${selectedSize === size ? 'var(--foreground)' : showSizeError ? 'var(--brand-error)' : 'var(--border)'}`,
                     }}
                   >
                     {size}
@@ -253,7 +253,7 @@ export function ProductDetail() {
                     initial={{ opacity: 0, height: 0 }}
                     animate={{ opacity: 1, height: 'auto' }}
                     exit={{ opacity: 0, height: 0 }}
-                    style={{ color: '#FF2D55', fontSize: '13px', fontWeight: 600, marginTop: 8 }}
+                    style={{ color: 'var(--brand-error)', fontSize: '13px', fontWeight: 600, marginTop: 8 }}
                   >
                     Please select a size to continue
                   </motion.p>
@@ -388,7 +388,7 @@ export function ProductDetail() {
               boxShadow: 'var(--shadow-xl)',
             }}
             animate={{
-              background: added ? '#00C853' : '#0D0D0D',
+              background: added ? 'var(--brand-success)' : '#111111',
             }}
           >
             <AnimatePresence mode="wait">

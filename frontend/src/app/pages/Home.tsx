@@ -1,16 +1,17 @@
-import { useRef } from 'react';
+import { FormEvent, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router';
 import { motion } from 'motion/react';
 import { ArrowRight, ChevronRight, Zap, Shield, RotateCcw, Star } from 'lucide-react';
 import { ProductCard } from '../components/ProductCard';
 import { products, getNewArrivals, getBestSellers, getExclusives } from '../data/products';
+import { api } from '../lib/api';
 
 const categories = [
-  { label: 'Running', icon: '🏃', color: '#0055FF', bg: 'rgba(0,85,255,0.08)', image: 'https://images.unsplash.com/photo-1776770673997-6a201dca425e?w=400&q=80' },
-  { label: 'Basketball', icon: '🏀', color: '#FF6B35', bg: 'rgba(255,107,53,0.08)', image: 'https://images.unsplash.com/photo-1560906992-4b00de401b90?w=400&q=80' },
-  { label: 'Lifestyle', icon: '✨', color: '#AAFF00', bg: 'rgba(170,255,0,0.08)', image: 'https://images.unsplash.com/photo-1618554707482-14854a29f955?w=400&q=80' },
-  { label: 'Training', icon: '💪', color: '#FF2D55', bg: 'rgba(255,45,85,0.08)', image: 'https://images.unsplash.com/photo-1603808033587-935942847de4?w=400&q=80' },
-  { label: 'Outdoor', icon: '🏔️', color: '#8B5CF6', bg: 'rgba(139,92,246,0.08)', image: 'https://images.unsplash.com/photo-1603808033587-935942847de4?w=400&q=80' },
+  { label: 'Running', icon: '🏃', color: '#1F3A5F', bg: 'rgba(31,58,95,0.08)', image: 'https://images.unsplash.com/photo-1776770673997-6a201dca425e?w=400&q=80' },
+  { label: 'Basketball', icon: '🏀', color: '#5F5A52', bg: 'rgba(95,90,82,0.08)', image: 'https://images.unsplash.com/photo-1560906992-4b00de401b90?w=400&q=80' },
+  { label: 'Lifestyle', icon: '✨', color: '#B89A4D', bg: 'rgba(184,154,77,0.08)', image: 'https://images.unsplash.com/photo-1618554707482-14854a29f955?w=400&q=80' },
+  { label: 'Training', icon: '💪', color: '#167A4A', bg: 'rgba(22,122,74,0.08)', image: 'https://images.unsplash.com/photo-1603808033587-935942847de4?w=400&q=80' },
+  { label: 'Outdoor', icon: '🏔️', color: '#3C3934', bg: 'rgba(60,57,52,0.08)', image: 'https://images.unsplash.com/photo-1603808033587-935942847de4?w=400&q=80' },
 ];
 
 const brands = [
@@ -34,88 +35,101 @@ export function Home() {
   const exclusives = getExclusives();
   const navigate = useNavigate();
   const heroRef = useRef<HTMLDivElement>(null);
+  const [newsletterEmail, setNewsletterEmail] = useState('');
+  const [newsletterStatus, setNewsletterStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+  const [newsletterMessage, setNewsletterMessage] = useState('');
 
   const heroProduct = products[0];
   const featuredProduct = products[3];
 
+  const handleNewsletterSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setNewsletterStatus('loading');
+    setNewsletterMessage('');
+
+    try {
+      await api.subscribeNewsletter(newsletterEmail);
+      setNewsletterStatus('success');
+      setNewsletterMessage('You are on the list. Drop alerts will arrive first.');
+      setNewsletterEmail('');
+    } catch (error) {
+      setNewsletterStatus('error');
+      setNewsletterMessage(error instanceof Error ? error.message : 'Could not subscribe right now.');
+    }
+  };
+
   return (
     <div style={{ background: 'var(--background)' }}>
       {/* HERO */}
-      <section ref={heroRef} className="relative overflow-hidden" style={{ minHeight: '88vh', background: '#0D0D0D' }}>
+      <section ref={heroRef} className="relative overflow-hidden" style={{ minHeight: '82vh', background: '#111111' }}>
         <img
-          src="https://images.unsplash.com/photo-1560906992-4b00de401b90?w=1400&q=80"
-          alt="Hero"
+          src="https://images.unsplash.com/photo-1614252369475-531eba835eb1?w=1600&q=85"
+          alt="Premium men's footwear"
           className="absolute inset-0 w-full h-full object-cover"
-          style={{ objectPosition: 'center 20%', filter: 'brightness(0.25)' }}
+          style={{ objectPosition: 'center 45%', filter: 'brightness(0.45) contrast(1.05)' }}
         />
         {/* Gradient */}
-        <div className="absolute inset-0 bg-gradient-to-r from-[#0D0D0D] via-[#0D0D0D]/70 to-transparent" />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0D0D0D] via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#111111] via-[#111111]/72 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#111111] via-transparent to-transparent" />
 
-        {/* Floating accent */}
-        <div
-          className="absolute top-1/3 right-1/4 w-96 h-96 rounded-full blur-3xl opacity-20"
-          style={{ background: 'var(--brand-accent)' }}
-        />
-
-        <div className="relative h-full max-w-7xl mx-auto px-5 lg:px-10 flex flex-col justify-end pb-14 lg:pb-20" style={{ minHeight: '88vh' }}>
+        <div className="relative h-full max-w-7xl mx-auto px-5 lg:px-10 flex flex-col justify-end pb-14 lg:pb-20" style={{ minHeight: '82vh' }}>
           <motion.div
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.7, ease: 'easeOut' }}
           >
             <span
-              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full mb-5"
-              style={{ background: 'rgba(0,85,255,0.2)', color: 'var(--brand-accent)', fontSize: '12px', fontWeight: 700, letterSpacing: '0.06em', border: '1px solid rgba(0,85,255,0.3)' }}
+              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-sm mb-5"
+              style={{ background: 'rgba(255,255,255,0.10)', color: '#E7E4DF', fontSize: '12px', fontWeight: 700, letterSpacing: '0.08em', border: '1px solid rgba(255,255,255,0.18)' }}
             >
-              <span className="w-1.5 h-1.5 rounded-full bg-[#0055FF] animate-pulse" />
-              NEW DROP 2026
+              <span className="w-1.5 h-1.5 rounded-full bg-[#B89A4D]" />
+              MEN'S FOOTWEAR 2026
             </span>
 
             <h1
               className="text-white mb-4"
               style={{
                 fontFamily: 'Satoshi, sans-serif',
-                fontSize: 'clamp(3rem, 8vw, 5.5rem)',
+                fontSize: 'clamp(2.75rem, 7vw, 5rem)',
                 fontWeight: 900,
-                letterSpacing: '-0.04em',
+                letterSpacing: '-0.02em',
                 lineHeight: 1.0,
                 maxWidth: '700px',
               }}
             >
-              Wear What<br />Others Only<br />
-              <span style={{ color: 'var(--brand-accent)' }}>Dream About</span>
+              Refined Shoes<br />For Everyday<br />
+              <span style={{ color: '#D2CEC6' }}>Confidence</span>
             </h1>
 
             <p style={{ color: 'rgba(255,255,255,0.55)', fontSize: 'clamp(15px,2vw,17px)', lineHeight: 1.6, maxWidth: '420px', marginBottom: '2rem' }}>
-              The most exclusive sneakers on the planet — authenticated, curated, and delivered to your door.
+              Premium men's sneakers and casual shoes selected for clean style, comfort, and durable daily wear.
             </p>
 
             <div className="flex flex-wrap gap-3">
               <motion.button
                 whileTap={{ scale: 0.95 }}
                 onClick={() => navigate('/catalog')}
-                className="flex items-center gap-2 px-7 h-13 rounded-2xl text-white"
-                style={{ background: 'var(--brand-accent)', fontSize: '15px', fontWeight: 700, height: '52px', letterSpacing: '-0.02em' }}
+                className="flex items-center gap-2 px-7 h-13 rounded-md text-white"
+                style={{ background: 'var(--foreground)', fontSize: '15px', fontWeight: 700, height: '52px', letterSpacing: '0' }}
               >
-                Shop Now <ArrowRight size={18} />
+                Shop Men's Shoes <ArrowRight size={18} />
               </motion.button>
               <motion.button
                 whileTap={{ scale: 0.95 }}
                 onClick={() => navigate('/catalog?isNew=true')}
-                className="flex items-center gap-2 px-7 rounded-2xl"
+                className="flex items-center gap-2 px-7 rounded-md"
                 style={{ background: 'rgba(255,255,255,0.1)', color: 'white', fontSize: '15px', fontWeight: 600, height: '52px', border: '1px solid rgba(255,255,255,0.15)' }}
               >
-                New Drops
+                New Arrivals
               </motion.button>
             </div>
 
             {/* Stats */}
             <div className="flex gap-8 mt-10">
               {[
-                { value: '20K+', label: 'Sneakers' },
-                { value: '100%', label: 'Authentic' },
-                { value: '2-Day', label: 'Delivery' },
+                { value: '20K+', label: 'Pairs' },
+                { value: '100%', label: 'Verified' },
+                { value: '2-Day', label: 'Shipping' },
               ].map(({ value, label }) => (
                 <div key={label}>
                   <p className="text-white" style={{ fontSize: '1.5rem', fontWeight: 800, letterSpacing: '-0.03em', fontFamily: 'Satoshi, sans-serif' }}>{value}</p>
@@ -152,7 +166,7 @@ export function Home() {
                 key={name}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => navigate(`/catalog?brand=${name}`)}
-                className="flex-shrink-0 px-5 h-11 rounded-2xl flex items-center gap-2 cursor-pointer transition-all"
+                className="flex-shrink-0 px-5 h-11 rounded-md flex items-center gap-2 cursor-pointer transition-all"
                 style={{ background: 'var(--card)', border: '1px solid var(--card-border)', boxShadow: 'var(--shadow-sm)' }}
                 whileHover={{ borderColor: 'var(--brand-accent)' }}
               >
@@ -172,7 +186,7 @@ export function Home() {
           <div className="flex items-center justify-between mb-8 px-5 lg:px-10">
             <div>
               <p style={{ fontSize: '12px', fontWeight: 700, letterSpacing: '0.08em', color: 'var(--brand-accent)' }}>JUST DROPPED</p>
-              <h2 style={{ fontFamily: 'Satoshi, sans-serif', marginTop: 4 }}>New Arrivals</h2>
+              <h2 style={{ fontFamily: 'Satoshi, sans-serif', marginTop: 4 }}>New Arrivals for Men</h2>
             </div>
             <Link to="/catalog?isNew=true" className="flex items-center gap-1" style={{ fontSize: '14px', fontWeight: 600, color: 'var(--foreground-muted)' }}>
               See all <ChevronRight size={16} />
@@ -194,7 +208,7 @@ export function Home() {
           <motion.div
             whileHover={{ scale: 1.005 }}
             onClick={() => navigate(`/product/${featuredProduct.id}`)}
-            className="relative overflow-hidden rounded-3xl cursor-pointer"
+            className="relative overflow-hidden rounded-lg cursor-pointer"
             style={{ height: 'clamp(280px, 40vw, 480px)' }}
           >
             <img
@@ -203,26 +217,26 @@ export function Home() {
               className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 hover:scale-105"
               style={{ objectPosition: 'center 30%' }}
             />
-            <div className="absolute inset-0 bg-gradient-to-r from-[#0D0D0D]/80 via-[#0D0D0D]/30 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-r from-[#111111]/80 via-[#111111]/30 to-transparent" />
             <div className="absolute inset-0 p-8 lg:p-12 flex flex-col justify-end">
               <span
-                className="inline-block px-3 py-1.5 rounded-full mb-3 self-start"
-                style={{ background: '#AAFF00', color: '#0D0D0D', fontSize: '11px', fontWeight: 700, letterSpacing: '0.06em' }}
+                className="inline-block px-3 py-1.5 rounded-sm mb-3 self-start"
+                style={{ background: '#E7E4DF', color: '#111111', fontSize: '11px', fontWeight: 700, letterSpacing: '0.08em' }}
               >
-                EXCLUSIVE DROP
+                EDITOR'S PICK
               </span>
               <h3 className="text-white mb-1" style={{ fontFamily: 'Satoshi, sans-serif', fontSize: 'clamp(1.75rem, 4vw, 3rem)', fontWeight: 900, letterSpacing: '-0.04em', lineHeight: 1.1 }}>
                 {featuredProduct.name}
               </h3>
               <p style={{ color: 'rgba(255,255,255,0.6)', fontSize: '15px', marginBottom: '1.25rem', maxWidth: 380 }}>
-                {featuredProduct.brand} · Limited Edition · Only a few pairs left
+                {featuredProduct.brand} · Premium materials · Built for daily wear
               </p>
               <div className="flex items-center gap-4">
                 <span className="text-white" style={{ fontSize: '1.75rem', fontWeight: 800, letterSpacing: '-0.04em' }}>
                   ${featuredProduct.price}
                 </span>
                 <button
-                  className="flex items-center gap-2 px-5 h-11 rounded-2xl text-white"
+                  className="flex items-center gap-2 px-5 h-11 rounded-md text-white"
                   style={{ background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.2)', fontSize: '14px', fontWeight: 700, backdropFilter: 'blur(8px)' }}
                 >
                   Shop Now <ArrowRight size={16} />
@@ -242,14 +256,14 @@ export function Home() {
               <h2 style={{ fontFamily: 'Satoshi, sans-serif', marginTop: 4 }}>Categories</h2>
             </div>
           </div>
-          <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 lg:gap-4">
+            <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 lg:gap-4">
             {categories.map(({ label, icon, color, image }) => (
               <motion.div
                 key={label}
                 whileTap={{ scale: 0.96 }}
                 whileHover={{ y: -4 }}
                 onClick={() => navigate(`/catalog?category=${label}`)}
-                className="relative overflow-hidden rounded-3xl cursor-pointer group"
+                className="relative overflow-hidden rounded-lg cursor-pointer group"
                 style={{ height: '160px' }}
               >
                 <img
@@ -261,7 +275,7 @@ export function Home() {
                 <div className="absolute inset-0 p-4 flex flex-col justify-end">
                   <span style={{ fontSize: '22px', marginBottom: '4px' }}>{icon}</span>
                   <span className="text-white" style={{ fontSize: '15px', fontWeight: 800, letterSpacing: '-0.02em' }}>{label}</span>
-                  <span style={{ color: color, fontSize: '11px', fontWeight: 700, marginTop: 2 }}>Shop →</span>
+                  <span style={{ color: '#E7E4DF', fontSize: '11px', fontWeight: 700, marginTop: 2 }}>Shop →</span>
                 </div>
               </motion.div>
             ))}
@@ -274,8 +288,8 @@ export function Home() {
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center justify-between mb-8 px-5 lg:px-10">
             <div>
-              <p style={{ fontSize: '12px', fontWeight: 700, letterSpacing: '0.08em', color: 'var(--brand-accent)' }}>TRENDING NOW</p>
-              <h2 style={{ fontFamily: 'Satoshi, sans-serif', marginTop: 4 }}>Best Sellers</h2>
+              <p style={{ fontSize: '12px', fontWeight: 700, letterSpacing: '0.08em', color: 'var(--brand-accent)' }}>CUSTOMER FAVORITES</p>
+              <h2 style={{ fontFamily: 'Satoshi, sans-serif', marginTop: 4 }}>Best-Selling Men's Shoes</h2>
             </div>
             <Link to="/catalog?sort=popular" className="flex items-center gap-1" style={{ fontSize: '14px', fontWeight: 600, color: 'var(--foreground-muted)' }}>
               See all <ChevronRight size={16} />
@@ -290,12 +304,12 @@ export function Home() {
       </section>
 
       {/* EXCLUSIVES BANNER */}
-      <section className="py-12 lg:py-16" style={{ background: '#0D0D0D' }}>
+      <section className="py-12 lg:py-16" style={{ background: '#111111' }}>
         <div className="max-w-7xl mx-auto px-5 lg:px-10">
           <div className="flex items-center justify-between mb-8">
             <div>
-              <p style={{ fontSize: '12px', fontWeight: 700, letterSpacing: '0.08em', color: '#AAFF00' }}>LIMITED ACCESS</p>
-              <h2 className="text-white" style={{ fontFamily: 'Satoshi, sans-serif', marginTop: 4 }}>Exclusive Drops</h2>
+              <p style={{ fontSize: '12px', fontWeight: 700, letterSpacing: '0.08em', color: '#B89A4D' }}>LIMITED SELECTION</p>
+              <h2 className="text-white" style={{ fontFamily: 'Satoshi, sans-serif', marginTop: 4 }}>Premium Picks</h2>
             </div>
             <Link to="/catalog?isExclusive=true" className="flex items-center gap-1" style={{ fontSize: '14px', fontWeight: 600, color: 'rgba(255,255,255,0.4)' }}>
               View all <ChevronRight size={16} />
@@ -306,7 +320,7 @@ export function Home() {
               <Link key={product.id} to={`/product/${product.id}`} className="group" style={{ flexShrink: 0, width: '240px' }}>
                 <motion.div
                   whileHover={{ y: -4 }}
-                  className="relative overflow-hidden rounded-3xl"
+                  className="relative overflow-hidden rounded-lg"
                   style={{ height: '300px', background: '#1A1A1A', border: '1px solid rgba(255,255,255,0.06)' }}
                 >
                   <img
@@ -315,12 +329,12 @@ export function Home() {
                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                     style={{ objectPosition: 'center 30%', filter: 'brightness(0.7)' }}
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#0D0D0D] via-transparent to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#111111] via-transparent to-transparent" />
                   <div className="absolute bottom-0 p-5">
-                    <span className="px-2.5 py-1 rounded-full" style={{ background: '#AAFF00', color: '#0D0D0D', fontSize: '10px', fontWeight: 700, letterSpacing: '0.04em' }}>EXCLUSIVE</span>
+                    <span className="px-2.5 py-1 rounded-sm" style={{ background: '#E7E4DF', color: '#111111', fontSize: '10px', fontWeight: 700, letterSpacing: '0.06em' }}>PREMIUM</span>
                     <p className="text-white mt-2" style={{ fontSize: '11px', color: 'rgba(255,255,255,0.5)' }}>{product.brand}</p>
                     <p className="text-white" style={{ fontSize: '15px', fontWeight: 700, letterSpacing: '-0.02em', marginTop: 2 }}>{product.name}</p>
-                    <p style={{ color: '#AAFF00', fontSize: '16px', fontWeight: 800, marginTop: 4 }}>${product.price}</p>
+                    <p style={{ color: '#D2CEC6', fontSize: '16px', fontWeight: 800, marginTop: 4 }}>${product.price}</p>
                   </div>
                 </motion.div>
               </Link>
@@ -333,8 +347,8 @@ export function Home() {
       <section className="py-12 lg:py-16 px-5 lg:px-10" style={{ background: 'var(--background-secondary)', borderTop: '1px solid var(--border)' }}>
         <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-3 gap-6">
           {perks.map(({ icon: Icon, label, desc }) => (
-            <div key={label} className="flex items-center gap-4 p-5 rounded-3xl" style={{ background: 'var(--card)', border: '1px solid var(--card-border)' }}>
-              <div className="w-11 h-11 rounded-2xl flex items-center justify-center flex-shrink-0" style={{ background: 'var(--brand-accent-subtle)' }}>
+            <div key={label} className="flex items-center gap-4 p-5 rounded-lg" style={{ background: 'var(--card)', border: '1px solid var(--card-border)' }}>
+              <div className="w-11 h-11 rounded-md flex items-center justify-center flex-shrink-0" style={{ background: 'var(--brand-accent-subtle)' }}>
                 <Icon size={20} style={{ color: 'var(--brand-accent)' }} />
               </div>
               <div>
@@ -363,7 +377,7 @@ export function Home() {
               { name: 'Sofia C.', text: 'Got my Air Jordan 11s in 2 days and they were 100% authentic. The packaging alone is 10/10.', rating: 5 },
               { name: 'Jordan B.', text: 'SNEAKRX is the only platform I trust. Their auth team is next level. Never had a bad experience.', rating: 5 },
             ].map(({ name, text, rating }) => (
-              <div key={name} className="p-6 rounded-3xl" style={{ background: 'var(--card)', border: '1px solid var(--card-border)' }}>
+              <div key={name} className="p-6 rounded-lg" style={{ background: 'var(--card)', border: '1px solid var(--card-border)' }}>
                 <div className="flex items-center gap-1 mb-3">
                   {Array.from({ length: rating }).map((_, i) => <Star key={i} size={14} fill="#FFB800" stroke="none" />)}
                 </div>
@@ -376,7 +390,7 @@ export function Home() {
       </section>
 
       {/* NEWSLETTER */}
-      <section className="py-16 px-5 lg:px-10" style={{ background: '#0D0D0D' }}>
+      <section className="py-16 px-5 lg:px-10" style={{ background: '#111111' }}>
         <div className="max-w-2xl mx-auto text-center">
           <span style={{ fontSize: '12px', fontWeight: 700, letterSpacing: '0.08em', color: 'var(--brand-accent)' }}>STAY AHEAD</span>
           <h2 className="text-white mt-3 mb-3" style={{ fontFamily: 'Satoshi, sans-serif', fontSize: 'clamp(1.75rem, 5vw, 2.5rem)', fontWeight: 900, letterSpacing: '-0.04em' }}>
@@ -385,21 +399,33 @@ export function Home() {
           <p style={{ color: 'rgba(255,255,255,0.5)', fontSize: '15px', lineHeight: 1.6, marginBottom: '2rem' }}>
             Be the first to know about new releases, exclusive drops, and member-only deals.
           </p>
-          <div className="flex gap-3 max-w-md mx-auto">
+          <form onSubmit={handleNewsletterSubmit} className="flex gap-3 max-w-md mx-auto">
             <input
               type="email"
               placeholder="your@email.com"
-              className="flex-1 h-12 px-4 rounded-2xl outline-none"
+              value={newsletterEmail}
+              onChange={event => setNewsletterEmail(event.target.value)}
+              className="flex-1 h-12 px-4 rounded-md outline-none"
               style={{ background: 'rgba(255,255,255,0.08)', color: 'white', border: '1px solid rgba(255,255,255,0.1)', fontSize: '15px' }}
+              required
             />
             <button
-              className="px-6 h-12 rounded-2xl text-white flex-shrink-0"
-              style={{ background: 'var(--brand-accent)', fontSize: '14px', fontWeight: 700 }}
+              disabled={newsletterStatus === 'loading'}
+              className="px-6 h-12 rounded-md text-white flex-shrink-0"
+              style={{ background: 'var(--brand-accent)', fontSize: '14px', fontWeight: 700, opacity: newsletterStatus === 'loading' ? 0.7 : 1 }}
             >
-              Subscribe
+              {newsletterStatus === 'loading' ? 'Sending...' : 'Subscribe'}
             </button>
-          </div>
-          <p style={{ color: 'rgba(255,255,255,0.3)', fontSize: '12px', marginTop: 12 }}>No spam. Unsubscribe anytime.</p>
+          </form>
+          <p
+            style={{
+              color: newsletterStatus === 'success' ? '#D2CEC6' : newsletterStatus === 'error' ? '#FFB4B8' : 'rgba(255,255,255,0.3)',
+              fontSize: '12px',
+              marginTop: 12,
+            }}
+          >
+            {newsletterMessage || 'No spam. Unsubscribe anytime.'}
+          </p>
         </div>
       </section>
 
@@ -410,7 +436,7 @@ export function Home() {
             <div>
               <div className="flex items-center gap-2 mb-2">
                 <div className="w-6 h-6 rounded-lg bg-white flex items-center justify-center">
-                  <span style={{ color: '#0D0D0D', fontSize: '10px', fontWeight: 900, fontFamily: 'Satoshi, sans-serif' }}>SX</span>
+                  <span style={{ color: '#111111', fontSize: '10px', fontWeight: 900, fontFamily: 'Satoshi, sans-serif' }}>SX</span>
                 </div>
                 <span className="text-white" style={{ fontSize: '16px', fontWeight: 800, letterSpacing: '-0.04em', fontFamily: 'Satoshi, sans-serif' }}>SNEAKRX</span>
               </div>

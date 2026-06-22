@@ -1,7 +1,9 @@
 import { Link, useNavigate, useLocation } from 'react-router';
+import { useEffect, useState } from 'react';
 import { ShoppingBag, Search, Sun, Moon, ArrowLeft, Heart } from 'lucide-react';
 import { motion } from 'motion/react';
 import { useApp } from '../../store/AppContext';
+import { api } from '../../lib/api';
 
 interface HeaderProps {
   title?: string;
@@ -10,9 +12,22 @@ interface HeaderProps {
 
 export function Header({ title, showBack }: HeaderProps) {
   const { cartCount, state, toggleTheme } = useApp();
+  const [apiOnline, setApiOnline] = useState<boolean | null>(null);
   const navigate = useNavigate();
   const location = useLocation();
   const isHome = location.pathname === '/';
+
+  useEffect(() => {
+    let active = true;
+
+    api.health()
+      .then(() => active && setApiOnline(true))
+      .catch(() => active && setApiOnline(false));
+
+    return () => {
+      active = false;
+    };
+  }, []);
 
   return (
     <header
@@ -82,6 +97,24 @@ export function Header({ title, showBack }: HeaderProps) {
 
         {/* Right actions */}
         <div className="flex items-center gap-1">
+          <span
+            className="hidden lg:inline-flex items-center gap-1.5 px-2.5 h-7 rounded-full"
+            title={apiOnline ? 'Backend online' : apiOnline === false ? 'Backend offline' : 'Checking backend'}
+            style={{
+              background: apiOnline ? 'rgba(0,200,83,0.1)' : apiOnline === false ? 'rgba(255,45,85,0.1)' : 'var(--secondary)',
+              color: apiOnline ? 'var(--brand-success)' : apiOnline === false ? 'var(--brand-error)' : 'var(--foreground-muted)',
+              fontSize: '11px',
+              fontWeight: 700,
+              border: '1px solid var(--border)',
+            }}
+          >
+            <span
+              className="w-1.5 h-1.5 rounded-full"
+              style={{ background: apiOnline ? 'var(--brand-success)' : apiOnline === false ? 'var(--brand-error)' : 'var(--foreground-muted)' }}
+            />
+            API
+          </span>
+
           <motion.button
             onClick={() => navigate('/search')}
             whileTap={{ scale: 0.9 }}
@@ -122,7 +155,7 @@ export function Header({ title, showBack }: HeaderProps) {
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
                   className="absolute -top-0.5 -right-0.5 min-w-4 h-4 rounded-full flex items-center justify-center text-white"
-                  style={{ fontSize: '9px', fontWeight: 700, background: '#FF2D55', padding: '0 3px' }}
+                  style={{ fontSize: '9px', fontWeight: 700, background: 'var(--brand-error)', padding: '0 3px' }}
                 >
                   {cartCount}
                 </motion.span>

@@ -22,7 +22,7 @@ export function ProductCard({ product, variant = 'default' }: ProductCardProps) 
         <motion.div
           whileHover={{ y: -2 }}
           whileTap={{ scale: 0.98 }}
-          className="relative overflow-hidden rounded-2xl"
+          className="relative overflow-hidden rounded-lg"
           style={{ background: 'var(--card)', border: '1px solid var(--card-border)', boxShadow: 'var(--shadow-sm)' }}
         >
           <div className="relative aspect-square overflow-hidden" style={{ background: 'var(--background-secondary)' }}>
@@ -33,8 +33,8 @@ export function ProductCard({ product, variant = 'default' }: ProductCardProps) 
             />
             {product.isNew && (
               <span
-                className="absolute top-2.5 left-2.5 px-2 py-0.5 rounded-full text-white"
-                style={{ fontSize: '10px', fontWeight: 700, background: 'var(--brand-accent)', letterSpacing: '0.02em' }}
+                className="absolute top-2.5 left-2.5 px-2 py-0.5 rounded-sm text-white"
+                style={{ fontSize: '10px', fontWeight: 700, background: 'var(--foreground)', letterSpacing: '0.04em' }}
               >
                 NEW
               </span>
@@ -56,11 +56,11 @@ export function ProductCard({ product, variant = 'default' }: ProductCardProps) 
         <motion.div
           whileHover={{ y: -3 }}
           whileTap={{ scale: 0.98 }}
-          className="relative overflow-hidden rounded-3xl"
+          className="relative overflow-hidden rounded-lg"
           style={{
             background: 'var(--card)',
             border: '1px solid var(--card-border)',
-            boxShadow: 'var(--shadow-md)',
+            boxShadow: 'var(--shadow-sm)',
             width: '220px',
             flexShrink: 0,
           }}
@@ -75,24 +75,24 @@ export function ProductCard({ product, variant = 'default' }: ProductCardProps) 
             <div className="absolute top-3 left-3 flex gap-1.5 flex-wrap">
               {product.isNew && (
                 <span
-                  className="px-2.5 py-1 rounded-full text-white"
-                  style={{ fontSize: '10px', fontWeight: 700, background: 'var(--brand-accent)', letterSpacing: '0.02em' }}
+                  className="px-2.5 py-1 rounded-sm text-white"
+                  style={{ fontSize: '10px', fontWeight: 700, background: 'var(--foreground)', letterSpacing: '0.04em' }}
                 >
                   NEW
                 </span>
               )}
               {product.isExclusive && (
                 <span
-                  className="px-2.5 py-1 rounded-full"
-                  style={{ fontSize: '10px', fontWeight: 700, background: 'rgba(0,0,0,0.7)', color: '#AAFF00', letterSpacing: '0.02em' }}
+                  className="px-2.5 py-1 rounded-sm"
+                  style={{ fontSize: '10px', fontWeight: 700, background: 'rgba(17,17,17,0.82)', color: '#E7E4DF', letterSpacing: '0.04em' }}
                 >
                   EXCL
                 </span>
               )}
               {discount > 0 && (
                 <span
-                  className="px-2.5 py-1 rounded-full text-white"
-                  style={{ fontSize: '10px', fontWeight: 700, background: '#FF2D55', letterSpacing: '0.02em' }}
+                  className="px-2.5 py-1 rounded-sm text-white"
+                  style={{ fontSize: '10px', fontWeight: 700, background: 'var(--brand-error)', letterSpacing: '0.04em' }}
                 >
                   -{discount}%
                 </span>
@@ -101,7 +101,7 @@ export function ProductCard({ product, variant = 'default' }: ProductCardProps) 
             <motion.button
               whileTap={{ scale: 0.85 }}
               onClick={(e) => { e.preventDefault(); toggleWishlist(product.id); }}
-              className="absolute top-3 right-3 w-8 h-8 rounded-full flex items-center justify-center transition-all"
+              className="absolute top-3 right-3 w-8 h-8 rounded-sm flex items-center justify-center transition-all"
               style={{
                 background: 'var(--glass-bg)',
                 backdropFilter: 'blur(8px)',
@@ -110,8 +110,8 @@ export function ProductCard({ product, variant = 'default' }: ProductCardProps) 
             >
               <Heart
                 size={15}
-                fill={inWishlist ? '#FF2D55' : 'none'}
-                stroke={inWishlist ? '#FF2D55' : 'currentColor'}
+                fill={inWishlist ? 'var(--brand-error)' : 'none'}
+                stroke={inWishlist ? 'var(--brand-error)' : 'currentColor'}
                 strokeWidth={2}
               />
             </motion.button>
@@ -119,7 +119,7 @@ export function ProductCard({ product, variant = 'default' }: ProductCardProps) 
           <div className="p-4">
             <div className="flex items-start justify-between gap-2">
               <div className="min-w-0">
-                <p style={{ fontSize: '11px', color: 'var(--brand-accent)', fontWeight: 600, letterSpacing: '0.02em' }}>
+                <p style={{ fontSize: '11px', color: 'var(--foreground-muted)', fontWeight: 700, letterSpacing: '0.06em' }}>
                   {product.brand.toUpperCase()}
                 </p>
                 <p style={{ fontSize: '14px', fontWeight: 700, letterSpacing: '-0.02em', lineHeight: 1.3 }} className="mt-0.5 truncate">
@@ -151,7 +151,7 @@ export function ProductCard({ product, variant = 'default' }: ProductCardProps) 
       <motion.div
         whileHover={{ y: -4 }}
         whileTap={{ scale: 0.97 }}
-        className="relative overflow-hidden rounded-3xl h-full"
+        className="relative overflow-hidden rounded-lg h-full"
         style={{
           background: 'var(--card)',
           border: '1px solid var(--card-border)',
@@ -170,17 +170,17 @@ export function ProductCard({ product, variant = 'default' }: ProductCardProps) 
           {/* Badges */}
           <div className="absolute top-3 left-3 flex gap-1.5 flex-wrap">
             {product.isNew && (
-              <span className="px-2.5 py-1 rounded-full text-white" style={{ fontSize: '10px', fontWeight: 700, background: 'var(--brand-accent)', letterSpacing: '0.03em' }}>
+              <span className="px-2.5 py-1 rounded-sm text-white" style={{ fontSize: '10px', fontWeight: 700, background: 'var(--foreground)', letterSpacing: '0.05em' }}>
                 NEW
               </span>
             )}
             {product.isExclusive && (
-              <span className="px-2.5 py-1 rounded-full" style={{ fontSize: '10px', fontWeight: 700, background: 'rgba(0,0,0,0.8)', color: '#AAFF00', letterSpacing: '0.03em' }}>
+              <span className="px-2.5 py-1 rounded-sm" style={{ fontSize: '10px', fontWeight: 700, background: 'rgba(17,17,17,0.82)', color: '#E7E4DF', letterSpacing: '0.05em' }}>
                 EXCL
               </span>
             )}
             {discount > 0 && (
-              <span className="px-2.5 py-1 rounded-full text-white" style={{ fontSize: '10px', fontWeight: 700, background: '#FF2D55', letterSpacing: '0.03em' }}>
+              <span className="px-2.5 py-1 rounded-sm text-white" style={{ fontSize: '10px', fontWeight: 700, background: 'var(--brand-error)', letterSpacing: '0.05em' }}>
                 -{discount}%
               </span>
             )}
@@ -190,7 +190,7 @@ export function ProductCard({ product, variant = 'default' }: ProductCardProps) 
           <motion.button
             whileTap={{ scale: 0.8 }}
             onClick={(e) => { e.preventDefault(); toggleWishlist(product.id); }}
-            className="absolute top-3 right-3 w-9 h-9 rounded-full flex items-center justify-center transition-all opacity-0 group-hover:opacity-100"
+            className="absolute top-3 right-3 w-9 h-9 rounded-sm flex items-center justify-center transition-all opacity-0 group-hover:opacity-100"
             style={{
               background: 'var(--glass-bg)',
               backdropFilter: 'blur(10px)',
@@ -199,15 +199,15 @@ export function ProductCard({ product, variant = 'default' }: ProductCardProps) 
           >
             <Heart
               size={16}
-              fill={inWishlist ? '#FF2D55' : 'none'}
-              stroke={inWishlist ? '#FF2D55' : 'currentColor'}
+              fill={inWishlist ? 'var(--brand-error)' : 'none'}
+              stroke={inWishlist ? 'var(--brand-error)' : 'currentColor'}
               strokeWidth={2}
             />
           </motion.button>
         </div>
 
         <div className="p-4">
-          <p style={{ fontSize: '11px', color: 'var(--brand-accent)', fontWeight: 600, letterSpacing: '0.04em' }}>
+          <p style={{ fontSize: '11px', color: 'var(--foreground-muted)', fontWeight: 700, letterSpacing: '0.06em' }}>
             {product.brand.toUpperCase()}
           </p>
           <p style={{ fontSize: '15px', fontWeight: 700, letterSpacing: '-0.02em', lineHeight: 1.3 }} className="mt-1">
