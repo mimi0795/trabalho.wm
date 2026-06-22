@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 node_modules/
 dist/
 frontend/dist/
@@ -5,3 +6,6 @@ frontend/dist/
 .env.local
 npm-debug.log*
 .logs/
+=======
+node_modules
+>>>>>>> 982fe67d6c94eaef1d0f69e08f64196bd4e8d1f4

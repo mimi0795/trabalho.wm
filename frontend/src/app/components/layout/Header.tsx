@@ -1,7 +1,11 @@
+<<<<<<< HEAD:frontend/src/app/components/layout/Header.tsx
 import { Link, useNavigate, useLocation } from 'react-router';
 import { useEffect, useState } from 'react';
+=======
+import { Link, useNavigate, useLocation } from 'react-router-dom';
+>>>>>>> 982fe67d6c94eaef1d0f69e08f64196bd4e8d1f4:src/app/components/layout/Header.tsx
 import { ShoppingBag, Search, Sun, Moon, ArrowLeft, Heart } from 'lucide-react';
-import { motion } from 'motion/react';
+import { motion } from 'framer-motion';
 import { useApp } from '../../store/AppContext';
 import { api } from '../../lib/api';
 
@@ -60,16 +64,39 @@ export function Header({ title, showBack }: HeaderProps) {
                 className="w-7 h-7 rounded-lg flex items-center justify-center"
                 style={{ background: 'var(--foreground)' }}
               >
-                <span style={{ color: 'var(--background)', fontSize: '12px', fontWeight: 900, fontFamily: 'Satoshi, sans-serif', letterSpacing: '-0.05em' }}>
+                <span
+                  style={{
+                    color: 'var(--background)',
+                    fontSize: '12px',
+                    fontWeight: 900,
+                    fontFamily: 'Satoshi, sans-serif',
+                    letterSpacing: '-0.05em',
+                  }}
+                >
                   SX
                 </span>
               </div>
-              <span style={{ fontSize: '17px', fontWeight: 800, letterSpacing: '-0.04em', fontFamily: 'Satoshi, sans-serif' }}>
+
+              <span
+                style={{
+                  fontSize: '17px',
+                  fontWeight: 800,
+                  letterSpacing: '-0.04em',
+                  fontFamily: 'Satoshi, sans-serif',
+                }}
+              >
                 SNEAKRX
               </span>
             </Link>
           ) : (
-            <h1 style={{ fontSize: '17px', fontWeight: 700, letterSpacing: '-0.03em', fontFamily: 'Satoshi, sans-serif' }}>
+            <h1
+              style={{
+                fontSize: '17px',
+                fontWeight: 700,
+                letterSpacing: '-0.03em',
+                fontFamily: 'Satoshi, sans-serif',
+              }}
+            >
               {title}
             </h1>
           )}
@@ -87,7 +114,11 @@ export function Header({ title, showBack }: HeaderProps) {
             <Link
               key={to}
               to={to}
-              style={{ fontSize: '14px', fontWeight: 500, letterSpacing: '-0.01em' }}
+              style={{
+                fontSize: '14px',
+                fontWeight: 500,
+                letterSpacing: '-0.01em',
+              }}
               className="transition-opacity hover:opacity-60"
             >
               {label}
@@ -130,7 +161,11 @@ export function Header({ title, showBack }: HeaderProps) {
             className="w-9 h-9 rounded-full flex items-center justify-center transition-colors hidden lg:flex"
             style={{ color: 'var(--foreground-muted)' }}
           >
-            {state.theme === 'dark' ? <Sun size={18} strokeWidth={1.75} /> : <Moon size={18} strokeWidth={1.75} />}
+            {state.theme === 'dark' ? (
+              <Sun size={18} strokeWidth={1.75} />
+            ) : (
+              <Moon size={18} strokeWidth={1.75} />
+            )}
           </motion.button>
 
           <motion.div whileTap={{ scale: 0.9 }} className="hidden lg:block">
@@ -150,12 +185,22 @@ export function Header({ title, showBack }: HeaderProps) {
               style={{ color: 'var(--foreground)' }}
             >
               <ShoppingBag size={18} strokeWidth={1.75} />
+
               {cartCount > 0 && (
                 <motion.span
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
                   className="absolute -top-0.5 -right-0.5 min-w-4 h-4 rounded-full flex items-center justify-center text-white"
+<<<<<<< HEAD:frontend/src/app/components/layout/Header.tsx
                   style={{ fontSize: '9px', fontWeight: 700, background: 'var(--brand-error)', padding: '0 3px' }}
+=======
+                  style={{
+                    fontSize: '9px',
+                    fontWeight: 700,
+                    background: '#FF2D55',
+                    padding: '0 3px',
+                  }}
+>>>>>>> 982fe67d6c94eaef1d0f69e08f64196bd4e8d1f4:src/app/components/layout/Header.tsx
                 >
                   {cartCount}
                 </motion.span>
@@ -166,7 +211,12 @@ export function Header({ title, showBack }: HeaderProps) {
           <Link
             to="/profile"
             className="hidden lg:flex ml-1 w-8 h-8 rounded-full items-center justify-center overflow-hidden"
-            style={{ background: 'var(--foreground)', color: 'var(--background)', fontSize: '12px', fontWeight: 700 }}
+            style={{
+              background: 'var(--foreground)',
+              color: 'var(--background)',
+              fontSize: '12px',
+              fontWeight: 700,
+            }}
           >
             {state.user?.name?.charAt(0) ?? 'G'}
           </Link>
