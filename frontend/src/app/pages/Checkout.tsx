@@ -4,42 +4,85 @@ import { motion, AnimatePresence } from 'motion/react';
 import { CreditCard, Smartphone, Building2, ChevronRight, Check } from 'lucide-react';
 import { useApp } from '../store/AppContext';
 import { api, cartItemsToOrderItems } from '../lib/api';
+import { FREE_SHIPPING_THRESHOLD, formatCurrency, pluralize, STANDARD_SHIPPING, TAX_RATE } from '../lib/locale';
 
-const STEPS = ['Address', 'Shipping', 'Payment', 'Review'] as const;
+const STEPS = ['Endereço', 'Entrega', 'Pagamento', 'Revisão'] as const;
 type Step = typeof STEPS[number];
 
 export function Checkout() {
-  const [step, setStep] = useState<Step>('Address');
+  const [step, setStep] = useState<Step>('Endereço');
   const [loading, setLoading] = useState(false);
   const [orderError, setOrderError] = useState('');
   const { state, cartTotal, dispatch } = useApp();
   const navigate = useNavigate();
 
   const stepIndex = STEPS.indexOf(step);
-  const shipping = cartTotal >= 150 ? 0 : 12.99;
-  const tax = cartTotal * 0.08;
+  const shipping = cartTotal >= FREE_SHIPPING_THRESHOLD ? 0 : STANDARD_SHIPPING;
+  const tax = cartTotal * TAX_RATE;
   const total = cartTotal + shipping + tax;
 
-  const [address, setAddress] = useState({ name: '', street: '', city: '', state: '', zip: '', country: 'US' });
+  const [address, setAddress] = useState({ name: '', street: '', city: '', state: '', zip: '', country: 'BR' });
   const [shippingMethod, setShippingMethod] = useState<'standard' | 'express' | 'overnight'>('standard');
   const [paymentMethod, setPaymentMethod] = useState<'card' | 'pix' | 'bank'>('card');
   const [card, setCard] = useState({ number: '', expiry: '', cvv: '', name: '' });
 
+  const validateStep = (currentStep: Step) => {
+    if (state.cart.length === 0) return 'Sua sacola está vazia';
+
+    if (currentStep === 'Endereço') {
+      const missing = [
+        !address.name.trim() && 'nome',
+        !address.street.trim() && 'rua',
+        !address.city.trim() && 'cidade',
+        !address.state.trim() && 'estado',
+        !address.zip.trim() && 'CEP',
+      ].filter(Boolean);
+
+      if (missing.length > 0) return `Preencha ${missing.join(', ')} para continuar`;
+    }
+
+    if (currentStep === 'Pagamento' && paymentMethod === 'card') {
+      const cardNumber = card.number.replace(/\D/g, '');
+      const cvv = card.cvv.replace(/\D/g, '');
+
+      if (cardNumber.length < 13 || !card.name.trim() || !card.expiry.trim() || cvv.length < 3) {
+        return 'Preencha os dados do cartão ou escolha PIX';
+      }
+    }
+
+    return '';
+  };
+
+  const validateCheckout = () => validateStep('Endereço') || validateStep('Pagamento');
+
   const handleNext = () => {
+    const validationError = validateStep(step);
+    if (validationError) {
+      setOrderError(validationError);
+      return;
+    }
+
+    setOrderError('');
     const idx = STEPS.indexOf(step);
     if (idx < STEPS.length - 1) setStep(STEPS[idx + 1]);
     else handlePlaceOrder();
   };
 
   const handlePlaceOrder = async () => {
+    const validationError = validateCheckout();
+    if (validationError) {
+      setOrderError(validationError);
+      return;
+    }
+
     setLoading(true);
     setOrderError('');
 
     try {
       const { order } = await api.createOrder({
         customer: {
-          name: address.name || state.user?.name || 'Guest Customer',
-          email: state.user?.email || 'guest@sneakrx.test',
+          name: address.name || state.user?.name || 'Cliente convidado',
+          email: state.user?.email || 'cliente@passoprime.test',
         },
         address,
         shippingMethod,
@@ -52,7 +95,7 @@ export function Checkout() {
       dispatch({ type: 'CLEAR_CART' });
       navigate(`/order-confirmed?order=${order.id}`);
     } catch (error) {
-      setOrderError(error instanceof Error ? error.message : 'Could not place order');
+      setOrderError(error instanceof Error ? error.message : 'Não foi possível finalizar o pedido');
     } finally {
       setLoading(false);
     }
@@ -69,21 +112,20 @@ export function Checkout() {
   const onBlur = (e: React.FocusEvent<HTMLInputElement>) => (e.target.style.borderColor = 'transparent');
 
   const shippingOptions = [
-    { id: 'standard', label: 'Standard Delivery', time: '3-5 business days', price: shipping === 0 ? 'FREE' : '$12.99', cost: shipping },
-    { id: 'express', label: 'Express Delivery', time: '1-2 business days', price: '$19.99', cost: 19.99 },
-    { id: 'overnight', label: 'Overnight Delivery', time: 'Next business day', price: '$39.99', cost: 39.99 },
+    { id: 'standard', label: 'Entrega padrão', time: '3 a 5 dias úteis', price: shipping === 0 ? 'Grátis' : formatCurrency(shipping), cost: shipping },
+    { id: 'express', label: 'Entrega expressa', time: '1 a 2 dias úteis', price: formatCurrency(49.9), cost: 49.9 },
+    { id: 'overnight', label: 'Entrega prioritária', time: 'Próximo dia útil', price: formatCurrency(89.9), cost: 89.9 },
   ];
 
   const paymentOptions = [
-    { id: 'card', icon: CreditCard, label: 'Credit / Debit Card' },
-    { id: 'pix', icon: Smartphone, label: 'PIX / Digital Wallet' },
-    { id: 'bank', icon: Building2, label: 'Bank Transfer' },
+    { id: 'card', icon: CreditCard, label: 'Cartão' },
+    { id: 'pix', icon: Smartphone, label: 'PIX' },
+    { id: 'bank', icon: Building2, label: 'Transferência' },
   ];
 
   return (
     <div className="min-h-screen" style={{ background: 'var(--background-secondary)' }}>
       <div className="max-w-4xl mx-auto px-5 lg:px-10 py-6">
-        {/* Progress */}
         <div className="flex items-center gap-0 mb-8 overflow-x-auto hide-scrollbar">
           {STEPS.map((s, i) => (
             <div key={s} className="flex items-center flex-shrink-0">
@@ -116,36 +158,40 @@ export function Checkout() {
         </div>
 
         <div className="lg:grid lg:grid-cols-3 lg:gap-8">
-          {/* Main form */}
           <div className="lg:col-span-2 mb-6 lg:mb-0">
             <div className="rounded-3xl p-6" style={{ background: 'var(--card)', border: '1px solid var(--card-border)', boxShadow: 'var(--shadow-sm)' }}>
               <AnimatePresence mode="wait">
-                {step === 'Address' && (
+                {step === 'Endereço' && (
                   <motion.div key="address" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="space-y-4">
-                    <h3 style={{ fontFamily: 'Satoshi, sans-serif', marginBottom: 20 }}>Delivery Address</h3>
+                    <h3 style={{ fontFamily: 'Satoshi, sans-serif', marginBottom: 20 }}>Endereço de entrega</h3>
                     <div className="grid grid-cols-1 gap-4">
-                      <input placeholder="Full name" className="w-full px-4 rounded-2xl outline-none" style={inputStyle} onFocus={onFocus} onBlur={onBlur} value={address.name} onChange={e => setAddress(a => ({ ...a, name: e.target.value }))} />
-                      <input placeholder="Street address" className="w-full px-4 rounded-2xl outline-none" style={inputStyle} onFocus={onFocus} onBlur={onBlur} value={address.street} onChange={e => setAddress(a => ({ ...a, street: e.target.value }))} />
+                      <input placeholder="Nome completo" className="w-full px-4 rounded-2xl outline-none" style={inputStyle} onFocus={onFocus} onBlur={onBlur} value={address.name} onChange={e => setAddress(a => ({ ...a, name: e.target.value }))} />
+                      <input placeholder="Rua, número e complemento" className="w-full px-4 rounded-2xl outline-none" style={inputStyle} onFocus={onFocus} onBlur={onBlur} value={address.street} onChange={e => setAddress(a => ({ ...a, street: e.target.value }))} />
                       <div className="grid grid-cols-2 gap-3">
-                        <input placeholder="City" className="px-4 rounded-2xl outline-none" style={inputStyle} onFocus={onFocus} onBlur={onBlur} value={address.city} onChange={e => setAddress(a => ({ ...a, city: e.target.value }))} />
-                        <input placeholder="State" className="px-4 rounded-2xl outline-none" style={inputStyle} onFocus={onFocus} onBlur={onBlur} value={address.state} onChange={e => setAddress(a => ({ ...a, state: e.target.value }))} />
+                        <input placeholder="Cidade" className="px-4 rounded-2xl outline-none" style={inputStyle} onFocus={onFocus} onBlur={onBlur} value={address.city} onChange={e => setAddress(a => ({ ...a, city: e.target.value }))} />
+                        <input placeholder="Estado" className="px-4 rounded-2xl outline-none" style={inputStyle} onFocus={onFocus} onBlur={onBlur} value={address.state} onChange={e => setAddress(a => ({ ...a, state: e.target.value }))} />
                       </div>
                       <div className="grid grid-cols-2 gap-3">
-                        <input placeholder="ZIP Code" className="px-4 rounded-2xl outline-none" style={inputStyle} onFocus={onFocus} onBlur={onBlur} value={address.zip} onChange={e => setAddress(a => ({ ...a, zip: e.target.value }))} />
-                        <select className="px-4 rounded-2xl outline-none" style={{ ...inputStyle, color: 'var(--foreground)' }}>
-                          <option>United States</option>
-                          <option>Brazil</option>
-                          <option>Canada</option>
-                          <option>United Kingdom</option>
+                        <input placeholder="CEP" className="px-4 rounded-2xl outline-none" style={inputStyle} onFocus={onFocus} onBlur={onBlur} value={address.zip} onChange={e => setAddress(a => ({ ...a, zip: e.target.value }))} />
+                        <select
+                          className="px-4 rounded-2xl outline-none"
+                          style={{ ...inputStyle, color: 'var(--foreground)' }}
+                          value={address.country}
+                          onChange={e => setAddress(a => ({ ...a, country: e.target.value }))}
+                        >
+                          <option value="BR">Brasil</option>
+                          <option value="US">Estados Unidos</option>
+                          <option value="CA">Canadá</option>
+                          <option value="GB">Reino Unido</option>
                         </select>
                       </div>
                     </div>
                   </motion.div>
                 )}
 
-                {step === 'Shipping' && (
+                {step === 'Entrega' && (
                   <motion.div key="shipping" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
-                    <h3 style={{ fontFamily: 'Satoshi, sans-serif', marginBottom: 20 }}>Shipping Method</h3>
+                    <h3 style={{ fontFamily: 'Satoshi, sans-serif', marginBottom: 20 }}>Método de entrega</h3>
                     <div className="space-y-3">
                       {shippingOptions.map(opt => (
                         <button
@@ -179,9 +225,9 @@ export function Checkout() {
                   </motion.div>
                 )}
 
-                {step === 'Payment' && (
+                {step === 'Pagamento' && (
                   <motion.div key="payment" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
-                    <h3 style={{ fontFamily: 'Satoshi, sans-serif', marginBottom: 20 }}>Payment Method</h3>
+                    <h3 style={{ fontFamily: 'Satoshi, sans-serif', marginBottom: 20 }}>Método de pagamento</h3>
                     <div className="flex gap-3 mb-6">
                       {paymentOptions.map(({ id, icon: Icon, label }) => (
                         <button
@@ -200,25 +246,30 @@ export function Checkout() {
                     </div>
                     {paymentMethod === 'card' && (
                       <div className="space-y-3">
-                        <input placeholder="Card number" maxLength={19} className="w-full px-4 rounded-2xl outline-none" style={inputStyle} onFocus={onFocus} onBlur={onBlur} value={card.number} onChange={e => setCard(c => ({ ...c, number: e.target.value.replace(/\D/g, '').replace(/(.{4})/g, '$1 ').trim() }))} />
-                        <input placeholder="Name on card" className="w-full px-4 rounded-2xl outline-none" style={inputStyle} onFocus={onFocus} onBlur={onBlur} value={card.name} onChange={e => setCard(c => ({ ...c, name: e.target.value }))} />
+                        <input placeholder="Número do cartão" maxLength={19} className="w-full px-4 rounded-2xl outline-none" style={inputStyle} onFocus={onFocus} onBlur={onBlur} value={card.number} onChange={e => setCard(c => ({ ...c, number: e.target.value.replace(/\D/g, '').replace(/(.{4})/g, '$1 ').trim() }))} />
+                        <input placeholder="Nome impresso no cartão" className="w-full px-4 rounded-2xl outline-none" style={inputStyle} onFocus={onFocus} onBlur={onBlur} value={card.name} onChange={e => setCard(c => ({ ...c, name: e.target.value }))} />
                         <div className="grid grid-cols-2 gap-3">
-                          <input placeholder="MM / YY" maxLength={5} className="px-4 rounded-2xl outline-none" style={inputStyle} onFocus={onFocus} onBlur={onBlur} value={card.expiry} onChange={e => setCard(c => ({ ...c, expiry: e.target.value }))} />
+                          <input placeholder="MM / AA" maxLength={5} className="px-4 rounded-2xl outline-none" style={inputStyle} onFocus={onFocus} onBlur={onBlur} value={card.expiry} onChange={e => setCard(c => ({ ...c, expiry: e.target.value }))} />
                           <input placeholder="CVV" maxLength={4} type="password" className="px-4 rounded-2xl outline-none" style={inputStyle} onFocus={onFocus} onBlur={onBlur} value={card.cvv} onChange={e => setCard(c => ({ ...c, cvv: e.target.value }))} />
                         </div>
                       </div>
                     )}
                     {paymentMethod === 'pix' && (
                       <div className="text-center p-8 rounded-2xl" style={{ background: 'var(--secondary)' }}>
-                        <p style={{ fontSize: '15px', fontWeight: 600, color: 'var(--foreground-muted)' }}>A PIX QR code will be generated after order confirmation</p>
+                        <p style={{ fontSize: '15px', fontWeight: 600, color: 'var(--foreground-muted)' }}>Um QR Code PIX será gerado após a confirmação do pedido.</p>
+                      </div>
+                    )}
+                    {paymentMethod === 'bank' && (
+                      <div className="text-center p-8 rounded-2xl" style={{ background: 'var(--secondary)' }}>
+                        <p style={{ fontSize: '15px', fontWeight: 600, color: 'var(--foreground-muted)' }}>Os dados bancários serão enviados junto com a confirmação.</p>
                       </div>
                     )}
                   </motion.div>
                 )}
 
-                {step === 'Review' && (
+                {step === 'Revisão' && (
                   <motion.div key="review" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
-                    <h3 style={{ fontFamily: 'Satoshi, sans-serif', marginBottom: 20 }}>Review Order</h3>
+                    <h3 style={{ fontFamily: 'Satoshi, sans-serif', marginBottom: 20 }}>Revisar pedido</h3>
                     <div className="space-y-3 mb-6">
                       {state.cart.map(item => (
                         <div key={`${item.product.id}-${item.size}`} className="flex gap-3 p-3 rounded-2xl" style={{ background: 'var(--secondary)' }}>
@@ -227,29 +278,29 @@ export function Checkout() {
                           </div>
                           <div className="flex-1 min-w-0">
                             <p style={{ fontSize: '14px', fontWeight: 700 }} className="truncate">{item.product.name}</p>
-                            <p style={{ fontSize: '12px', color: 'var(--foreground-muted)' }}>EU {item.size} · {item.color} · Qty {item.quantity}</p>
+                            <p style={{ fontSize: '12px', color: 'var(--foreground-muted)' }}>EU {item.size} · {item.color} · Qtd. {item.quantity}</p>
                           </div>
-                          <span style={{ fontSize: '15px', fontWeight: 800 }}>${(item.product.price * item.quantity).toFixed(2)}</span>
+                          <span style={{ fontSize: '15px', fontWeight: 800 }}>{formatCurrency(item.product.price * item.quantity)}</span>
                         </div>
                       ))}
                     </div>
                     <div className="space-y-2 p-4 rounded-2xl" style={{ background: 'var(--secondary)' }}>
                       <div className="flex justify-between text-sm">
                         <span style={{ color: 'var(--foreground-muted)' }}>Subtotal</span>
-                        <span style={{ fontWeight: 600 }}>${cartTotal.toFixed(2)}</span>
+                        <span style={{ fontWeight: 600 }}>{formatCurrency(cartTotal)}</span>
                       </div>
                       <div className="flex justify-between text-sm">
-                        <span style={{ color: 'var(--foreground-muted)' }}>Shipping</span>
-                        <span style={{ fontWeight: 600, color: shipping === 0 ? '#00C853' : 'inherit' }}>{shipping === 0 ? 'FREE' : `$${shipping.toFixed(2)}`}</span>
+                        <span style={{ color: 'var(--foreground-muted)' }}>Frete</span>
+                        <span style={{ fontWeight: 600, color: shipping === 0 ? '#00C853' : 'inherit' }}>{shipping === 0 ? 'Grátis' : formatCurrency(shipping)}</span>
                       </div>
                       <div className="flex justify-between text-sm">
-                        <span style={{ color: 'var(--foreground-muted)' }}>Tax</span>
-                        <span style={{ fontWeight: 600 }}>${tax.toFixed(2)}</span>
+                        <span style={{ color: 'var(--foreground-muted)' }}>Taxas</span>
+                        <span style={{ fontWeight: 600 }}>{formatCurrency(tax)}</span>
                       </div>
                       <div className="h-px" style={{ background: 'var(--border)' }} />
                       <div className="flex justify-between">
                         <span style={{ fontWeight: 700, fontSize: '15px' }}>Total</span>
-                        <span style={{ fontWeight: 900, fontSize: '18px' }}>${total.toFixed(2)}</span>
+                        <span style={{ fontWeight: 900, fontSize: '18px' }}>{formatCurrency(total)}</span>
                       </div>
                     </div>
                   </motion.div>
@@ -258,22 +309,23 @@ export function Checkout() {
             </div>
           </div>
 
-          {/* Side summary */}
           <div className="lg:col-span-1">
             <div className="rounded-3xl p-5 sticky top-20" style={{ background: 'var(--card)', border: '1px solid var(--card-border)' }}>
-              <h4 style={{ fontFamily: 'Satoshi, sans-serif', marginBottom: 12, fontSize: '15px' }}>{state.cart.length} item{state.cart.length !== 1 ? 's' : ''}</h4>
+              <h4 style={{ fontFamily: 'Satoshi, sans-serif', marginBottom: 12, fontSize: '15px' }}>
+                {state.cart.length} {pluralize(state.cart.length, 'item', 'itens')}
+              </h4>
               <div className="space-y-2 mb-4">
                 {state.cart.map(item => (
                   <div key={`${item.product.id}-${item.size}`} className="flex justify-between text-sm">
                     <span style={{ color: 'var(--foreground-muted)', maxWidth: '150px' }} className="truncate">{item.product.name} ×{item.quantity}</span>
-                    <span style={{ fontWeight: 600 }}>${(item.product.price * item.quantity).toFixed(2)}</span>
+                    <span style={{ fontWeight: 600 }}>{formatCurrency(item.product.price * item.quantity)}</span>
                   </div>
                 ))}
               </div>
               <div className="h-px mb-4" style={{ background: 'var(--border)' }} />
               <div className="flex justify-between mb-5">
                 <span style={{ fontWeight: 700 }}>Total</span>
-                <span style={{ fontWeight: 900, fontSize: '18px' }}>${total.toFixed(2)}</span>
+                <span style={{ fontWeight: 900, fontSize: '18px' }}>{formatCurrency(total)}</span>
               </div>
 
               <motion.button
@@ -287,7 +339,7 @@ export function Checkout() {
                   <div className="w-5 h-5 rounded-full border-2 border-white/30 border-t-white animate-spin" />
                 ) : (
                   <>
-                    {step === 'Review' ? 'Place Order' : 'Continue'}
+                    {step === 'Revisão' ? 'Confirmar pedido' : 'Continuar'}
                     <ChevronRight size={18} />
                   </>
                 )}

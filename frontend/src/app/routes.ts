@@ -7,6 +7,7 @@ import { Cart } from './pages/Cart';
 import { Checkout } from './pages/Checkout';
 import { OrderConfirmed } from './pages/OrderConfirmed';
 import { Profile } from './pages/Profile';
+import { ProfileDashboard } from './pages/ProfileDashboard';
 import { Wishlist } from './pages/Wishlist';
 import { SearchPage } from './pages/Search';
 import { Login } from './pages/Login';
@@ -39,6 +40,7 @@ export const router = createBrowserRouter([
       { path: 'checkout', Component: Checkout },
       { path: 'order-confirmed', Component: OrderConfirmed },
       { path: 'profile', Component: Profile },
+      { path: 'profile/:section', Component: ProfileDashboard },
       { path: 'wishlist', Component: Wishlist },
       { path: '*', Component: NotFound },
     ],

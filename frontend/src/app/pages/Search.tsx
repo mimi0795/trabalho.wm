@@ -4,8 +4,9 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Search, X, TrendingUp, Clock } from 'lucide-react';
 import { products } from '../data/products';
 import { ProductCard } from '../components/ProductCard';
+import { formatCurrency, formatNumber, translateCategory } from '../lib/locale';
 
-const trending = ['Jordan 4', 'Air Force 1', 'Yeezy 700', 'Dunk Low', 'Ultraboost', 'Air Max 97'];
+const trending = ['Jordan 4', 'Air Force 1', 'Dunk Low', 'Ultraboost', 'Air Max 97', 'corrida'];
 const recent = ['Jordan Retro IV OG', 'Air Phantom Ultra', 'Boost 360 Pro'];
 
 export function SearchPage() {
@@ -19,16 +20,15 @@ export function SearchPage() {
       p.name.toLowerCase().includes(q) ||
       p.brand.toLowerCase().includes(q) ||
       p.category.toLowerCase().includes(q) ||
-      p.tags.some(t => t.includes(q))
+      translateCategory(p.category).toLowerCase().includes(q) ||
+      p.tags.some(t => t.toLowerCase().includes(q))
     );
   }, [query]);
 
-  const showSuggestions = focused && query.length < 2;
   const showResults = query.length >= 2;
 
   return (
     <div className="min-h-screen" style={{ background: 'var(--background)' }}>
-      {/* Search bar */}
       <div className="sticky top-14 z-30 px-4 py-3" style={{ background: 'var(--nav-bg)', backdropFilter: 'blur(20px)', borderBottom: '1px solid var(--border)' }}>
         <div className="max-w-2xl mx-auto relative">
           <Search size={18} className="absolute left-4 top-1/2 -translate-y-1/2" style={{ color: 'var(--foreground-muted)' }} />
@@ -38,7 +38,7 @@ export function SearchPage() {
             onChange={e => setQuery(e.target.value)}
             onFocus={() => setFocused(true)}
             onBlur={() => setTimeout(() => setFocused(false), 150)}
-            placeholder="Search sneakers, brands..."
+            placeholder="Buscar tênis, marcas, categorias..."
             className="w-full h-12 pl-11 pr-11 rounded-2xl outline-none transition-all"
             style={{
               background: 'var(--input-background)',
@@ -50,7 +50,7 @@ export function SearchPage() {
             }}
           />
           {query && (
-            <button onClick={() => setQuery('')} className="absolute right-4 top-1/2 -translate-y-1/2">
+            <button onClick={() => setQuery('')} className="absolute right-4 top-1/2 -translate-y-1/2" aria-label="Limpar busca">
               <X size={16} style={{ color: 'var(--foreground-muted)' }} />
             </button>
           )}
@@ -67,13 +67,13 @@ export function SearchPage() {
               exit={{ opacity: 0 }}
             >
               <p style={{ fontSize: '13px', color: 'var(--foreground-muted)', marginBottom: 16 }}>
-                {results.length} results for "<strong style={{ color: 'var(--foreground)' }}>{query}</strong>"
+                {formatNumber(results.length)} resultados para "<strong style={{ color: 'var(--foreground)' }}>{query}</strong>"
               </p>
               {results.length === 0 ? (
                 <div className="text-center py-16">
-                  <p style={{ fontSize: '3rem' }}>🔍</p>
-                  <h3 style={{ fontFamily: 'Satoshi, sans-serif', marginTop: 12, marginBottom: 8 }}>No results found</h3>
-                  <p style={{ color: 'var(--foreground-muted)' }}>Try different keywords</p>
+                  <p style={{ fontSize: '3rem' }}>⌕</p>
+                  <h3 style={{ fontFamily: 'Satoshi, sans-serif', marginTop: 12, marginBottom: 8 }}>Nenhum resultado encontrado</h3>
+                  <p style={{ color: 'var(--foreground-muted)' }}>Tente buscar por outra palavra</p>
                 </div>
               ) : (
                 <div className="grid grid-cols-2 gap-4">
@@ -97,12 +97,11 @@ export function SearchPage() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
             >
-              {/* Recent searches */}
               {recent.length > 0 && (
                 <div className="mb-8">
                   <div className="flex items-center gap-2 mb-4">
                     <Clock size={15} style={{ color: 'var(--foreground-muted)' }} />
-                    <p style={{ fontSize: '13px', fontWeight: 700, letterSpacing: '0.04em', color: 'var(--foreground-muted)' }}>RECENT</p>
+                    <p style={{ fontSize: '13px', fontWeight: 700, letterSpacing: '0.04em', color: 'var(--foreground-muted)' }}>RECENTES</p>
                   </div>
                   <div className="space-y-1">
                     {recent.map(term => (
@@ -119,11 +118,10 @@ export function SearchPage() {
                 </div>
               )}
 
-              {/* Trending */}
               <div className="mb-8">
                 <div className="flex items-center gap-2 mb-4">
                   <TrendingUp size={15} style={{ color: 'var(--brand-accent)' }} />
-                  <p style={{ fontSize: '13px', fontWeight: 700, letterSpacing: '0.04em', color: 'var(--foreground-muted)' }}>TRENDING</p>
+                  <p style={{ fontSize: '13px', fontWeight: 700, letterSpacing: '0.04em', color: 'var(--foreground-muted)' }}>EM ALTA</p>
                 </div>
                 <div className="flex flex-wrap gap-2">
                   {trending.map(term => (
@@ -140,9 +138,8 @@ export function SearchPage() {
                 </div>
               </div>
 
-              {/* Popular products */}
               <div>
-                <p style={{ fontSize: '13px', fontWeight: 700, letterSpacing: '0.04em', color: 'var(--foreground-muted)', marginBottom: 16 }}>POPULAR RIGHT NOW</p>
+                <p style={{ fontSize: '13px', fontWeight: 700, letterSpacing: '0.04em', color: 'var(--foreground-muted)', marginBottom: 16 }}>POPULARES AGORA</p>
                 <div className="space-y-3">
                   {products.filter(p => p.isBestSeller).slice(0, 5).map(p => (
                     <Link to={`/product/${p.id}`} key={p.id}>
@@ -157,7 +154,7 @@ export function SearchPage() {
                         <div className="min-w-0 flex-1">
                           <p style={{ fontSize: '11px', color: 'var(--brand-accent)', fontWeight: 600 }}>{p.brand}</p>
                           <p style={{ fontSize: '14px', fontWeight: 700, letterSpacing: '-0.02em' }} className="truncate">{p.name}</p>
-                          <p style={{ fontSize: '13px', fontWeight: 700, marginTop: 2 }}>${p.price}</p>
+                          <p style={{ fontSize: '13px', fontWeight: 700, marginTop: 2 }}>{formatCurrency(p.price)}</p>
                         </div>
                       </motion.div>
                     </Link>
@@ -167,6 +164,7 @@ export function SearchPage() {
             </motion.div>
           )}
         </AnimatePresence>
+        {!showResults && focused ? null : null}
       </div>
     </div>
   );

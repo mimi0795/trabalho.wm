@@ -14,11 +14,11 @@ export function NotFound() {
       >
         <div className="mb-6">
           <p style={{ fontSize: '100px', lineHeight: 1, fontFamily: 'Satoshi, sans-serif', fontWeight: 900, color: 'var(--border)' }}>404</p>
-          <span style={{ fontSize: '4rem', display: 'block', marginTop: -20 }}>👟</span>
+          <span style={{ fontSize: '4rem', display: 'block', marginTop: -20 }}>⌕</span>
         </div>
-        <h2 style={{ fontFamily: 'Satoshi, sans-serif', letterSpacing: '-0.04em', marginBottom: 8 }}>Page not found</h2>
+        <h2 style={{ fontFamily: 'Satoshi, sans-serif', letterSpacing: '-0.04em', marginBottom: 8 }}>Página não encontrada</h2>
         <p style={{ color: 'var(--foreground-muted)', fontSize: '15px', lineHeight: 1.6, marginBottom: 32, maxWidth: '320px' }}>
-          Looks like this page pulled a vanishing act. Let's get you back to the collection.
+          Essa página saiu da coleção. Vamos levar você de volta para os produtos.
         </p>
         <div className="flex gap-3 justify-center">
           <motion.button
@@ -27,7 +27,7 @@ export function NotFound() {
             className="flex items-center gap-2 px-6 h-12 rounded-2xl text-white"
             style={{ background: 'var(--foreground)', fontSize: '15px', fontWeight: 700 }}
           >
-            <Home size={18} /> Home
+            <Home size={18} /> Início
           </motion.button>
           <motion.button
             whileTap={{ scale: 0.95 }}
@@ -35,7 +35,7 @@ export function NotFound() {
             className="flex items-center gap-2 px-6 h-12 rounded-2xl"
             style={{ background: 'var(--secondary)', border: '1px solid var(--border)', fontSize: '15px', fontWeight: 600 }}
           >
-            <Search size={18} /> Browse
+            <Search size={18} /> Catálogo
           </motion.button>
         </div>
       </motion.div>

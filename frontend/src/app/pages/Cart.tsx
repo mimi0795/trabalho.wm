@@ -2,12 +2,13 @@ import { useNavigate } from 'react-router';
 import { motion, AnimatePresence } from 'motion/react';
 import { Trash2, Plus, Minus, ShoppingBag, ArrowRight, Tag } from 'lucide-react';
 import { useApp } from '../store/AppContext';
+import { FREE_SHIPPING_THRESHOLD, formatCurrency, pluralize, STANDARD_SHIPPING, TAX_RATE } from '../lib/locale';
 
 export function Cart() {
   const { state, dispatch, cartTotal, cartCount } = useApp();
   const navigate = useNavigate();
-  const shipping = cartTotal >= 150 ? 0 : 12.99;
-  const tax = cartTotal * 0.08;
+  const shipping = cartTotal >= FREE_SHIPPING_THRESHOLD ? 0 : STANDARD_SHIPPING;
+  const tax = cartTotal * TAX_RATE;
   const total = cartTotal + shipping + tax;
 
   const updateQty = (productId: string, size: number, color: string, delta: number) => {
@@ -33,9 +34,9 @@ export function Cart() {
             >
               <ShoppingBag size={40} style={{ color: 'var(--foreground-muted)' }} />
             </motion.div>
-            <h2 style={{ fontFamily: 'Satoshi, sans-serif' }}>Your cart is empty</h2>
+            <h2 style={{ fontFamily: 'Satoshi, sans-serif' }}>Sua sacola está vazia</h2>
             <p style={{ color: 'var(--foreground-muted)', fontSize: '15px', marginTop: 8, marginBottom: 24 }}>
-              Looks like you haven't added anything yet
+              Parece que você ainda não adicionou nenhum produto
             </p>
             <motion.button
               whileTap={{ scale: 0.97 }}
@@ -43,15 +44,14 @@ export function Cart() {
               className="px-8 h-12 rounded-2xl text-white flex items-center gap-2"
               style={{ background: 'var(--foreground)', fontSize: '15px', fontWeight: 700 }}
             >
-              Browse Sneakers <ArrowRight size={18} />
+              Ver catálogo <ArrowRight size={18} />
             </motion.button>
           </div>
         ) : (
           <div className="lg:grid lg:grid-cols-3 lg:gap-8">
-            {/* Cart items */}
             <div className="lg:col-span-2 space-y-3 mb-6 lg:mb-0">
               <p style={{ fontSize: '13px', color: 'var(--foreground-muted)', fontWeight: 600, marginBottom: 16 }}>
-                {cartCount} item{cartCount !== 1 ? 's' : ''} in cart
+                {cartCount} {pluralize(cartCount, 'item na sacola', 'itens na sacola')}
               </p>
               <AnimatePresence>
                 {state.cart.map(item => (
@@ -87,7 +87,7 @@ export function Cart() {
                             <span style={{ fontSize: '12px', color: 'var(--foreground-muted)', fontWeight: 500 }}>{item.color}</span>
                           </div>
                         </div>
-                        <button onClick={() => remove(item.product.id, item.size, item.color)}>
+                        <button onClick={() => remove(item.product.id, item.size, item.color)} aria-label="Remover item">
                           <Trash2 size={16} style={{ color: 'var(--foreground-muted)' }} />
                         </button>
                       </div>
@@ -97,6 +97,7 @@ export function Cart() {
                           <button
                             onClick={() => updateQty(item.product.id, item.size, item.color, -1)}
                             className="w-9 h-9 flex items-center justify-center transition-colors hover:bg-[var(--secondary)]"
+                            aria-label="Diminuir quantidade"
                           >
                             <Minus size={14} />
                           </button>
@@ -106,12 +107,13 @@ export function Cart() {
                           <button
                             onClick={() => updateQty(item.product.id, item.size, item.color, 1)}
                             className="w-9 h-9 flex items-center justify-center transition-colors hover:bg-[var(--secondary)]"
+                            aria-label="Aumentar quantidade"
                           >
                             <Plus size={14} />
                           </button>
                         </div>
                         <span style={{ fontSize: '18px', fontWeight: 800, letterSpacing: '-0.03em' }}>
-                          ${(item.product.price * item.quantity).toFixed(2)}
+                          {formatCurrency(item.product.price * item.quantity)}
                         </span>
                       </div>
                     </div>
@@ -120,31 +122,29 @@ export function Cart() {
               </AnimatePresence>
             </div>
 
-            {/* Order summary */}
             <div className="lg:col-span-1">
               <div className="rounded-3xl p-5 sticky top-20" style={{ background: 'var(--card)', border: '1px solid var(--card-border)', boxShadow: 'var(--shadow-md)' }}>
-                <h3 style={{ fontFamily: 'Satoshi, sans-serif', marginBottom: 20 }}>Order Summary</h3>
+                <h3 style={{ fontFamily: 'Satoshi, sans-serif', marginBottom: 20 }}>Resumo do pedido</h3>
 
-                {/* Coupon */}
                 <div className="flex gap-2 mb-5">
                   <div className="flex-1 relative">
                     <Tag size={15} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: 'var(--foreground-muted)' }} />
                     <input
-                      placeholder="Coupon code"
+                      placeholder="Cupom"
                       className="w-full h-10 pl-9 pr-3 rounded-xl outline-none"
                       style={{ background: 'var(--input-background)', fontSize: '13px', border: '1px solid var(--border)' }}
                     />
                   </div>
                   <button className="px-4 h-10 rounded-xl" style={{ background: 'var(--secondary)', fontSize: '13px', fontWeight: 700, border: '1px solid var(--border)' }}>
-                    Apply
+                    Aplicar
                   </button>
                 </div>
 
                 <div className="space-y-3 mb-5">
                   {[
-                    { label: 'Subtotal', value: `$${cartTotal.toFixed(2)}` },
-                    { label: 'Shipping', value: shipping === 0 ? 'FREE' : `$${shipping.toFixed(2)}`, green: shipping === 0 },
-                    { label: 'Tax (8%)', value: `$${tax.toFixed(2)}` },
+                    { label: 'Subtotal', value: formatCurrency(cartTotal) },
+                    { label: 'Frete', value: shipping === 0 ? 'Grátis' : formatCurrency(shipping), green: shipping === 0 },
+                    { label: 'Taxas (8%)', value: formatCurrency(tax) },
                   ].map(({ label, value, green }) => (
                     <div key={label} className="flex justify-between">
                       <span style={{ fontSize: '14px', color: 'var(--foreground-muted)' }}>{label}</span>
@@ -157,13 +157,13 @@ export function Cart() {
 
                 <div className="flex justify-between mb-5">
                   <span style={{ fontSize: '16px', fontWeight: 700 }}>Total</span>
-                  <span style={{ fontSize: '20px', fontWeight: 900, letterSpacing: '-0.03em' }}>${total.toFixed(2)}</span>
+                  <span style={{ fontSize: '20px', fontWeight: 900, letterSpacing: '-0.03em' }}>{formatCurrency(total)}</span>
                 </div>
 
-                {cartTotal < 150 && (
+                {cartTotal < FREE_SHIPPING_THRESHOLD && (
                   <div className="p-3 rounded-2xl mb-4" style={{ background: 'var(--brand-accent-subtle)', border: '1px solid var(--brand-accent-glow)' }}>
                     <p style={{ fontSize: '12px', color: 'var(--brand-accent)', fontWeight: 600 }}>
-                      Add ${(150 - cartTotal).toFixed(2)} more for FREE shipping
+                      Faltam {formatCurrency(FREE_SHIPPING_THRESHOLD - cartTotal)} para frete grátis
                     </p>
                   </div>
                 )}
@@ -174,11 +174,11 @@ export function Cart() {
                   className="w-full h-13 rounded-2xl text-white flex items-center justify-center gap-2"
                   style={{ background: 'var(--foreground)', fontSize: '16px', fontWeight: 700, height: '52px', letterSpacing: '-0.02em' }}
                 >
-                  Checkout <ArrowRight size={18} />
+                  Finalizar compra <ArrowRight size={18} />
                 </motion.button>
 
                 <p className="text-center mt-3" style={{ fontSize: '12px', color: 'var(--foreground-muted)' }}>
-                  🔒 Secured by 256-bit SSL encryption
+                  Compra protegida com criptografia SSL de 256 bits
                 </p>
               </div>
             </div>

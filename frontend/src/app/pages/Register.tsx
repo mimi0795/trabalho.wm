@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router';
 import { motion } from 'motion/react';
 import { Eye, EyeOff, ArrowLeft } from 'lucide-react';
 import { useApp } from '../store/AppContext';
+import { SITE_NAME } from '../lib/locale';
 
 export function Register() {
   const [form, setForm] = useState({ name: '', email: '', password: '' });
@@ -37,22 +38,22 @@ export function Register() {
         <button onClick={() => navigate(-1)} className="w-9 h-9 rounded-full flex items-center justify-center" style={{ background: 'var(--secondary)' }}>
           <ArrowLeft size={18} />
         </button>
-        <span style={{ fontSize: '17px', fontWeight: 700, letterSpacing: '-0.03em' }}>Create Account</span>
+        <span style={{ fontSize: '17px', fontWeight: 700, letterSpacing: '-0.03em' }}>Criar conta</span>
       </div>
 
       <div className="mb-8">
-        <h1 style={{ fontFamily: 'Satoshi, sans-serif', fontWeight: 800, letterSpacing: '-0.04em', fontSize: '2rem' }}>Join SNEAKRX</h1>
+        <h1 style={{ fontFamily: 'Satoshi, sans-serif', fontWeight: 800, letterSpacing: '-0.04em', fontSize: '2rem' }}>Entre para {SITE_NAME}</h1>
         <p style={{ color: 'var(--foreground-muted)', fontSize: '15px', marginTop: 6 }}>
-          Access exclusive drops, save your grails, and checkout in seconds.
+          Acesse lançamentos exclusivos, salve seus pares favoritos e compre em segundos.
         </p>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label style={{ fontSize: '13px', fontWeight: 600, color: 'var(--foreground-secondary)' }}>Full Name</label>
+          <label style={{ fontSize: '13px', fontWeight: 600, color: 'var(--foreground-secondary)' }}>Nome completo</label>
           <input
             {...field('name')}
-            placeholder="Your name"
+            placeholder="Seu nome"
             required
             className="w-full mt-1.5 h-12 px-4 rounded-2xl outline-none transition-all"
             style={inputStyle}
@@ -61,11 +62,11 @@ export function Register() {
           />
         </div>
         <div>
-          <label style={{ fontSize: '13px', fontWeight: 600, color: 'var(--foreground-secondary)' }}>Email</label>
+          <label style={{ fontSize: '13px', fontWeight: 600, color: 'var(--foreground-secondary)' }}>E-mail</label>
           <input
             {...field('email')}
             type="email"
-            placeholder="you@example.com"
+            placeholder="voce@exemplo.com"
             required
             className="w-full mt-1.5 h-12 px-4 rounded-2xl outline-none transition-all"
             style={inputStyle}
@@ -74,12 +75,12 @@ export function Register() {
           />
         </div>
         <div>
-          <label style={{ fontSize: '13px', fontWeight: 600, color: 'var(--foreground-secondary)' }}>Password</label>
+          <label style={{ fontSize: '13px', fontWeight: 600, color: 'var(--foreground-secondary)' }}>Senha</label>
           <div className="relative mt-1.5">
             <input
               {...field('password')}
               type={showPassword ? 'text' : 'password'}
-              placeholder="Min. 8 characters"
+              placeholder="Mínimo de 8 caracteres"
               required
               minLength={8}
               className="w-full h-12 px-4 pr-12 rounded-2xl outline-none transition-all"
@@ -92,6 +93,7 @@ export function Register() {
               onClick={() => setShowPassword(s => !s)}
               className="absolute right-4 top-1/2 -translate-y-1/2"
               style={{ color: 'var(--foreground-muted)' }}
+              aria-label={showPassword ? 'Ocultar senha' : 'Mostrar senha'}
             >
               {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
             </button>
@@ -99,9 +101,9 @@ export function Register() {
         </div>
 
         <p style={{ fontSize: '12px', color: 'var(--foreground-muted)', lineHeight: 1.5 }}>
-          By creating an account you agree to our{' '}
-          <span style={{ color: 'var(--brand-accent)' }}>Terms</span> and{' '}
-          <span style={{ color: 'var(--brand-accent)' }}>Privacy Policy</span>.
+          Ao criar uma conta, você concorda com nossos{' '}
+          <span style={{ color: 'var(--brand-accent)' }}>Termos</span> e nossa{' '}
+          <span style={{ color: 'var(--brand-accent)' }}>Política de Privacidade</span>.
         </p>
 
         <motion.button
@@ -117,13 +119,13 @@ export function Register() {
             letterSpacing: '-0.02em',
           }}
         >
-          {loading ? <div className="w-5 h-5 rounded-full border-2 border-white/30 border-t-white animate-spin" /> : 'Create Account'}
+          {loading ? <div className="w-5 h-5 rounded-full border-2 border-white/30 border-t-white animate-spin" /> : 'Criar conta'}
         </motion.button>
       </form>
 
       <p className="text-center mt-8" style={{ fontSize: '14px', color: 'var(--foreground-muted)' }}>
-        Already have an account?{' '}
-        <Link to="/auth/login" style={{ color: 'var(--brand-accent)', fontWeight: 700 }}>Sign in</Link>
+        Já tem uma conta?{' '}
+        <Link to="/auth/login" style={{ color: 'var(--brand-accent)', fontWeight: 700 }}>Entrar</Link>
       </p>
     </div>
   );

@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router';
 import { motion, AnimatePresence } from 'motion/react';
-import { Heart, Star, Truck, Shield, RotateCcw, ChevronDown, Share2, ZoomIn } from 'lucide-react';
+import { Heart, Star, Truck, Shield, RotateCcw, Share2, ZoomIn, Minus, Plus } from 'lucide-react';
 import { getProductById, getRelated } from '../data/products';
 import { ProductCard } from '../components/ProductCard';
 import { useApp } from '../store/AppContext';
+import { FREE_SHIPPING_THRESHOLD, formatCurrency, formatDate, formatNumber, formatRating } from '../lib/locale';
 
 export function ProductDetail() {
   const { id } = useParams<{ id: string }>();
@@ -15,6 +16,7 @@ export function ProductDetail() {
   const [activeImage, setActiveImage] = useState(0);
   const [selectedSize, setSelectedSize] = useState<number | null>(null);
   const [selectedColor, setSelectedColor] = useState(product?.colors[0] ?? null);
+  const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState<'details' | 'reviews'>('details');
   const [added, setAdded] = useState(false);
   const [showSizeError, setShowSizeError] = useState(false);
@@ -23,10 +25,10 @@ export function ProductDetail() {
   if (!product) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center gap-4">
-        <p style={{ fontSize: '3rem' }}>👟</p>
-        <h3 style={{ fontFamily: 'Satoshi, sans-serif' }}>Product not found</h3>
+        <p style={{ fontSize: '3rem' }}>⌕</p>
+        <h3 style={{ fontFamily: 'Satoshi, sans-serif' }}>Produto não encontrado</h3>
         <button onClick={() => navigate('/catalog')} className="px-6 h-11 rounded-2xl text-white" style={{ background: 'var(--foreground)', fontSize: '14px', fontWeight: 700 }}>
-          Browse Catalog
+          Ver catálogo
         </button>
       </div>
     );
@@ -35,6 +37,7 @@ export function ProductDetail() {
   const related = getRelated(product);
   const inWishlist = isInWishlist(product.id);
   const discount = product.originalPrice ? Math.round((1 - product.price / product.originalPrice) * 100) : 0;
+  const itemTotal = product.price * quantity;
 
   const handleAddToCart = () => {
     if (!selectedSize) {
@@ -46,7 +49,7 @@ export function ProductDetail() {
       product,
       size: selectedSize,
       color: selectedColor?.name ?? product.colors[0].name,
-      quantity: 1,
+      quantity,
     });
     setAdded(true);
     setTimeout(() => setAdded(false), 2500);
@@ -56,7 +59,6 @@ export function ProductDetail() {
     <div style={{ background: 'var(--background)', paddingBottom: '6rem' }}>
       <div className="max-w-7xl mx-auto">
         <div className="lg:grid lg:grid-cols-2 lg:gap-0">
-          {/* IMAGE GALLERY */}
           <div className="relative lg:sticky lg:top-14 lg:self-start">
             <div
               className="relative overflow-hidden cursor-zoom-in"
@@ -77,10 +79,9 @@ export function ProductDetail() {
                 />
               </AnimatePresence>
 
-              {/* Badges */}
               <div className="absolute top-4 left-4 flex flex-col gap-2">
                 {product.isNew && (
-                  <span className="px-3 py-1.5 rounded-full text-white" style={{ fontSize: '11px', fontWeight: 700, background: 'var(--brand-accent)', letterSpacing: '0.04em' }}>NEW</span>
+                  <span className="px-3 py-1.5 rounded-full text-white" style={{ fontSize: '11px', fontWeight: 700, background: 'var(--brand-accent)', letterSpacing: '0.04em' }}>NOVO</span>
                 )}
                 {product.isExclusive && (
                   <span className="px-3 py-1.5 rounded-sm" style={{ fontSize: '11px', fontWeight: 700, background: 'rgba(17,17,17,0.82)', color: '#E7E4DF', letterSpacing: '0.06em' }}>PREMIUM</span>
@@ -90,7 +91,6 @@ export function ProductDetail() {
                 )}
               </div>
 
-              {/* Zoom icon */}
               <button
                 onClick={() => setZoomOpen(true)}
                 className="absolute top-4 right-4 w-9 h-9 rounded-full flex items-center justify-center"
@@ -99,7 +99,6 @@ export function ProductDetail() {
                 <ZoomIn size={16} />
               </button>
 
-              {/* Image dots */}
               <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-1.5">
                 {product.images.map((_, i) => (
                   <button
@@ -117,7 +116,6 @@ export function ProductDetail() {
               </div>
             </div>
 
-            {/* Thumbnail strip */}
             <div className="flex gap-2 p-4 overflow-x-auto hide-scrollbar">
               {product.images.map((img, i) => (
                 <button
@@ -137,9 +135,7 @@ export function ProductDetail() {
             </div>
           </div>
 
-          {/* PRODUCT INFO */}
           <div className="px-5 lg:px-10 lg:py-8">
-            {/* Brand + actions */}
             <div className="flex items-start justify-between mb-1">
               <span style={{ fontSize: '13px', color: 'var(--brand-accent)', fontWeight: 700, letterSpacing: '0.06em' }}>
                 {product.brand.toUpperCase()}
@@ -168,38 +164,35 @@ export function ProductDetail() {
               {product.name}
             </h1>
 
-            {/* Rating */}
             <div className="flex items-center gap-2 mb-4">
               <div className="flex items-center gap-0.5">
                 {[1,2,3,4,5].map(i => (
                   <Star key={i} size={14} fill={i <= Math.round(product.rating) ? '#FFB800' : 'none'} stroke={i <= Math.round(product.rating) ? 'none' : 'var(--foreground-muted)'} />
                 ))}
               </div>
-              <span style={{ fontSize: '14px', fontWeight: 700 }}>{product.rating}</span>
-              <span style={{ fontSize: '13px', color: 'var(--foreground-muted)' }}>({product.reviewCount.toLocaleString()} reviews)</span>
+              <span style={{ fontSize: '14px', fontWeight: 700 }}>{formatRating(product.rating)}</span>
+              <span style={{ fontSize: '13px', color: 'var(--foreground-muted)' }}>({formatNumber(product.reviewCount)} avaliações)</span>
             </div>
 
-            {/* Price */}
             <div className="flex items-baseline gap-3 mb-6">
               <span style={{ fontSize: '2rem', fontWeight: 900, letterSpacing: '-0.04em', fontFamily: 'Satoshi, sans-serif' }}>
-                ${product.price}
+                {formatCurrency(product.price)}
               </span>
               {product.originalPrice && (
                 <>
                   <span style={{ fontSize: '1.25rem', color: 'var(--foreground-muted)', textDecoration: 'line-through' }}>
-                    ${product.originalPrice}
+                    {formatCurrency(product.originalPrice)}
                   </span>
                   <span className="px-2.5 py-1 rounded-sm text-white" style={{ fontSize: '12px', fontWeight: 700, background: 'var(--brand-error)' }}>
-                    Save ${product.originalPrice - product.price}
+                    Economize {formatCurrency(product.originalPrice - product.price)}
                   </span>
                 </>
               )}
             </div>
 
-            {/* Color selector */}
             <div className="mb-6">
               <p style={{ fontSize: '13px', fontWeight: 700, marginBottom: 10 }}>
-                Color: <span style={{ fontWeight: 500, color: 'var(--foreground-muted)' }}>{selectedColor?.name}</span>
+                Cor: <span style={{ fontWeight: 500, color: 'var(--foreground-muted)' }}>{selectedColor?.name}</span>
               </p>
               <div className="flex gap-2.5">
                 {product.colors.map(color => (
@@ -220,13 +213,12 @@ export function ProductDetail() {
               </div>
             </div>
 
-            {/* Size selector */}
             <div className="mb-6">
               <div className="flex items-center justify-between mb-3">
                 <p style={{ fontSize: '13px', fontWeight: 700 }}>
-                  Size (EU): {selectedSize && <span style={{ color: 'var(--brand-accent)', fontWeight: 800 }}>{selectedSize}</span>}
+                  Tamanho (EU): {selectedSize && <span style={{ color: 'var(--brand-accent)', fontWeight: 800 }}>{selectedSize}</span>}
                 </p>
-                <button style={{ fontSize: '12px', color: 'var(--brand-accent)', fontWeight: 600 }}>Size Guide</button>
+                <button style={{ fontSize: '12px', color: 'var(--brand-accent)', fontWeight: 600 }}>Guia de tamanhos</button>
               </div>
               <div className="grid grid-cols-5 gap-2">
                 {product.sizes.map(size => (
@@ -255,18 +247,59 @@ export function ProductDetail() {
                     exit={{ opacity: 0, height: 0 }}
                     style={{ color: 'var(--brand-error)', fontSize: '13px', fontWeight: 600, marginTop: 8 }}
                   >
-                    Please select a size to continue
+                    Selecione um tamanho para continuar
                   </motion.p>
                 )}
               </AnimatePresence>
             </div>
 
-            {/* Shipping info */}
+            <div className="mb-6">
+              <div className="flex items-center justify-between gap-4">
+                <div>
+                  <p style={{ fontSize: '13px', fontWeight: 700 }}>Quantidade</p>
+                  <p style={{ fontSize: '12px', color: 'var(--foreground-muted)', marginTop: 2 }}>
+                    Total: {formatCurrency(itemTotal)}
+                  </p>
+                </div>
+                <div
+                  className="flex items-center rounded-2xl overflow-hidden"
+                  style={{ border: '1.5px solid var(--border)', background: 'var(--secondary)' }}
+                >
+                  <button
+                    type="button"
+                    aria-label="Diminuir quantidade"
+                    disabled={quantity === 1}
+                    onClick={() => setQuantity(value => Math.max(1, value - 1))}
+                    className="flex items-center justify-center transition-all"
+                    style={{ width: 44, height: 44, color: quantity === 1 ? 'var(--foreground-muted)' : 'var(--foreground)', cursor: quantity === 1 ? 'not-allowed' : 'pointer' }}
+                  >
+                    <Minus size={15} />
+                  </button>
+                  <span
+                    aria-live="polite"
+                    style={{ width: 42, textAlign: 'center', fontSize: '15px', fontWeight: 800 }}
+                  >
+                    {quantity}
+                  </span>
+                  <button
+                    type="button"
+                    aria-label="Aumentar quantidade"
+                    disabled={quantity === 10}
+                    onClick={() => setQuantity(value => Math.min(10, value + 1))}
+                    className="flex items-center justify-center transition-all"
+                    style={{ width: 44, height: 44, color: quantity === 10 ? 'var(--foreground-muted)' : 'var(--foreground)', cursor: quantity === 10 ? 'not-allowed' : 'pointer' }}
+                  >
+                    <Plus size={15} />
+                  </button>
+                </div>
+              </div>
+            </div>
+
             <div className="rounded-3xl p-4 mb-6 space-y-3" style={{ background: 'var(--background-secondary)', border: '1px solid var(--border)' }}>
               {[
-                { icon: Truck, text: 'Free shipping on orders over $150', sub: 'Delivered in 2-3 business days' },
-                { icon: Shield, text: '100% Authentic Guarantee', sub: 'Every pair verified by our experts' },
-                { icon: RotateCcw, text: 'Free Returns', sub: '30 days return policy' },
+                { icon: Truck, text: `Frete grátis acima de ${formatCurrency(FREE_SHIPPING_THRESHOLD)}`, sub: 'Entrega em 2 a 3 dias úteis' },
+                { icon: Shield, text: 'Garantia de autenticidade', sub: 'Cada par é verificado por especialistas' },
+                { icon: RotateCcw, text: 'Trocas sem complicação', sub: '30 dias para solicitar troca ou devolução' },
               ].map(({ icon: Icon, text, sub }) => (
                 <div key={text} className="flex items-start gap-3">
                   <Icon size={18} style={{ color: 'var(--brand-accent)', flexShrink: 0, marginTop: 1 }} />
@@ -278,7 +311,6 @@ export function ProductDetail() {
               ))}
             </div>
 
-            {/* Tabs */}
             <div className="mb-6">
               <div className="flex gap-0 rounded-2xl overflow-hidden mb-4" style={{ background: 'var(--secondary)' }}>
                 {(['details', 'reviews'] as const).map(tab => (
@@ -291,11 +323,10 @@ export function ProductDetail() {
                       color: activeTab === tab ? 'var(--background)' : 'var(--foreground-muted)',
                       fontSize: '13px',
                       fontWeight: 700,
-                      textTransform: 'capitalize',
                       borderRadius: '16px',
                     }}
                   >
-                    {tab === 'reviews' ? `Reviews (${product.reviewCount.toLocaleString()})` : 'Details'}
+                    {tab === 'reviews' ? `Avaliações (${formatNumber(product.reviewCount)})` : 'Detalhes'}
                   </button>
                 ))}
               </div>
@@ -331,10 +362,10 @@ export function ProductDetail() {
                               <div className="flex items-center gap-2">
                                 <p style={{ fontSize: '14px', fontWeight: 700 }}>{review.author}</p>
                                 {review.verified && (
-                                  <span className="px-2 py-0.5 rounded-full" style={{ fontSize: '10px', fontWeight: 700, background: 'rgba(0,85,255,0.1)', color: 'var(--brand-accent)' }}>✓ Verified</span>
+                                  <span className="px-2 py-0.5 rounded-full" style={{ fontSize: '10px', fontWeight: 700, background: 'rgba(0,85,255,0.1)', color: 'var(--brand-accent)' }}>✓ Verificado</span>
                                 )}
                               </div>
-                              <p style={{ fontSize: '12px', color: 'var(--foreground-muted)' }}>{new Date(review.date).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</p>
+                              <p style={{ fontSize: '12px', color: 'var(--foreground-muted)' }}>{formatDate(review.date)}</p>
                             </div>
                           </div>
                           <div className="flex">
@@ -351,10 +382,9 @@ export function ProductDetail() {
           </div>
         </div>
 
-        {/* RELATED PRODUCTS */}
         {related.length > 0 && (
           <div className="px-5 lg:px-10 py-10" style={{ borderTop: '1px solid var(--border)' }}>
-            <h3 style={{ fontFamily: 'Satoshi, sans-serif', marginBottom: 20 }}>You Might Also Like</h3>
+            <h3 style={{ fontFamily: 'Satoshi, sans-serif', marginBottom: 20 }}>Você também pode gostar</h3>
             <div className="flex gap-4 overflow-x-auto hide-scrollbar pb-2">
               {related.map(p => (
                 <div key={p.id} style={{ flexShrink: 0 }}>
@@ -366,7 +396,6 @@ export function ProductDetail() {
         )}
       </div>
 
-      {/* STICKY ADD TO CART */}
       <div
         className="fixed bottom-16 left-0 right-0 px-4 pb-2 z-40 lg:bottom-0 lg:pb-4"
         style={{ background: 'linear-gradient(to top, var(--background) 60%, transparent)' }}
@@ -394,11 +423,11 @@ export function ProductDetail() {
             <AnimatePresence mode="wait">
               {added ? (
                 <motion.span key="added" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}>
-                  ✓ Added to Cart!
+                  ✓ Adicionado à sacola
                 </motion.span>
               ) : (
                 <motion.span key="add" initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}>
-                  Add to Cart — ${product.price}
+                  Adicionar à sacola — {formatCurrency(itemTotal)}
                 </motion.span>
               )}
             </AnimatePresence>
@@ -406,7 +435,6 @@ export function ProductDetail() {
         </div>
       </div>
 
-      {/* Zoom modal */}
       <AnimatePresence>
         {zoomOpen && (
           <motion.div

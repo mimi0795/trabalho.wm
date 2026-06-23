@@ -1,13 +1,10 @@
-<<<<<<< HEAD:frontend/src/app/components/layout/Header.tsx
 import { Link, useNavigate, useLocation } from 'react-router';
 import { useEffect, useState } from 'react';
-=======
-import { Link, useNavigate, useLocation } from 'react-router-dom';
->>>>>>> 982fe67d6c94eaef1d0f69e08f64196bd4e8d1f4:src/app/components/layout/Header.tsx
 import { ShoppingBag, Search, Sun, Moon, ArrowLeft, Heart } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useApp } from '../../store/AppContext';
 import { api } from '../../lib/api';
+import { SITE_INITIALS, SITE_NAME, translateCategory } from '../../lib/locale';
 
 interface HeaderProps {
   title?: string;
@@ -73,7 +70,7 @@ export function Header({ title, showBack }: HeaderProps) {
                     letterSpacing: '-0.05em',
                   }}
                 >
-                  SX
+                  {SITE_INITIALS}
                 </span>
               </div>
 
@@ -85,7 +82,7 @@ export function Header({ title, showBack }: HeaderProps) {
                   fontFamily: 'Satoshi, sans-serif',
                 }}
               >
-                SNEAKRX
+                {SITE_NAME}
               </span>
             </Link>
           ) : (
@@ -105,11 +102,11 @@ export function Header({ title, showBack }: HeaderProps) {
         {/* Desktop navigation */}
         <nav className="hidden lg:flex items-center gap-8">
           {[
-            { to: '/', label: 'Home' },
-            { to: '/catalog', label: 'Browse' },
-            { to: '/catalog?category=Running', label: 'Running' },
+            { to: '/', label: 'Início' },
+            { to: '/catalog', label: 'Catálogo' },
+            { to: '/catalog?category=Running', label: translateCategory('Running') },
             { to: '/catalog?brand=Jordan', label: 'Jordan' },
-            { to: '/catalog?isNew=true', label: 'New' },
+            { to: '/catalog?isNew=true', label: 'Novidades' },
           ].map(({ to, label }) => (
             <Link
               key={to}
@@ -130,7 +127,7 @@ export function Header({ title, showBack }: HeaderProps) {
         <div className="flex items-center gap-1">
           <span
             className="hidden lg:inline-flex items-center gap-1.5 px-2.5 h-7 rounded-full"
-            title={apiOnline ? 'Backend online' : apiOnline === false ? 'Backend offline' : 'Checking backend'}
+            title={apiOnline ? 'API online' : apiOnline === false ? 'API offline' : 'Verificando API'}
             style={{
               background: apiOnline ? 'rgba(0,200,83,0.1)' : apiOnline === false ? 'rgba(255,45,85,0.1)' : 'var(--secondary)',
               color: apiOnline ? 'var(--brand-success)' : apiOnline === false ? 'var(--brand-error)' : 'var(--foreground-muted)',
@@ -191,16 +188,7 @@ export function Header({ title, showBack }: HeaderProps) {
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
                   className="absolute -top-0.5 -right-0.5 min-w-4 h-4 rounded-full flex items-center justify-center text-white"
-<<<<<<< HEAD:frontend/src/app/components/layout/Header.tsx
                   style={{ fontSize: '9px', fontWeight: 700, background: 'var(--brand-error)', padding: '0 3px' }}
-=======
-                  style={{
-                    fontSize: '9px',
-                    fontWeight: 700,
-                    background: '#FF2D55',
-                    padding: '0 3px',
-                  }}
->>>>>>> 982fe67d6c94eaef1d0f69e08f64196bd4e8d1f4:src/app/components/layout/Header.tsx
                 >
                   {cartCount}
                 </motion.span>

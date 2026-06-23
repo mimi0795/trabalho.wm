@@ -3,32 +3,33 @@ import { useNavigate } from 'react-router';
 import { motion, AnimatePresence } from 'motion/react';
 import { ChevronRight, Zap, Shield, Truck } from 'lucide-react';
 import { useApp } from '../store/AppContext';
+import { SITE_INITIALS, SITE_NAME } from '../lib/locale';
 
 const slides = [
   {
     id: 0,
     image: 'https://images.unsplash.com/photo-1560906992-4b00de401b90?w=800&q=80',
-    tag: 'PREMIUM SELECTION',
-    headline: 'The Rarest\nSneakers,\nAll in One Place',
-    body: 'Thousands of exclusive drops from Nike, Jordan, Adidas and more — authenticated and ready to ship.',
+    tag: 'SELEÇÃO PREMIUM',
+    headline: 'Os tênis\nmais desejados\nem um só lugar',
+    body: 'Milhares de lançamentos exclusivos de Nike, Jordan, Adidas e outras marcas, todos autenticados e prontos para envio.',
     icon: Shield,
     accent: '#1F3A5F',
   },
   {
     id: 1,
     image: 'https://images.unsplash.com/photo-1618554707482-14854a29f955?w=800&q=80',
-    tag: 'INSTANT DROPS',
-    headline: 'Never Miss\na Release\nAgain',
-    body: 'Real-time alerts for limited drops. Secure checkout in under 30 seconds. Be first in line, every time.',
+    tag: 'DROPS EM TEMPO REAL',
+    headline: 'Nunca perca\num lançamento\nimportante',
+    body: 'Receba alertas de drops limitados e finalize sua compra com segurança em poucos segundos.',
     icon: Zap,
     accent: '#B89A4D',
   },
   {
     id: 2,
     image: 'https://images.unsplash.com/photo-1560769629-975ec94e6a86?w=800&q=80',
-    tag: 'FAST DELIVERY',
-    headline: 'Delivered in\n24 Hours,\nAuthenticated',
-    body: '100% verified authentic. Ships in premium packaging with certificate of authenticity included.',
+    tag: 'ENTREGA RÁPIDA',
+    headline: 'Entrega ágil,\ncom autenticidade\ngarantida',
+    body: 'Todos os pares são verificados e enviados em embalagem premium com garantia de autenticidade.',
     icon: Truck,
     accent: '#167A4A',
   },
@@ -53,6 +54,7 @@ export function Onboarding() {
   };
 
   const slide = slides[current];
+  const Icon = slide.icon;
 
   return (
     <div className="fixed inset-0 overflow-hidden" style={{ background: '#111111' }}>
@@ -65,7 +67,6 @@ export function Onboarding() {
           transition={{ duration: 0.5, ease: 'easeOut' }}
           className="absolute inset-0"
         >
-          {/* Background image */}
           <div className="absolute inset-0">
             <img
               src={slide.image}
@@ -75,31 +76,27 @@ export function Onboarding() {
             />
           </div>
 
-          {/* Gradient overlay */}
           <div className="absolute inset-0 bg-gradient-to-t from-[#111111] via-[#111111]/60 to-transparent" />
 
-          {/* Content */}
           <div className="absolute inset-0 flex flex-col justify-between p-8" style={{ paddingTop: 'calc(env(safe-area-inset-top, 0px) + 56px)', paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 40px)' }}>
-            {/* Top: logo + skip */}
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <div
                   className="w-8 h-8 rounded-xl flex items-center justify-center"
                   style={{ background: 'white' }}
                 >
-                  <span style={{ color: '#111111', fontSize: '13px', fontWeight: 900, fontFamily: 'Satoshi, sans-serif', letterSpacing: '-0.05em' }}>SX</span>
+                  <span style={{ color: '#111111', fontSize: '13px', fontWeight: 900, fontFamily: 'Satoshi, sans-serif', letterSpacing: '-0.05em' }}>{SITE_INITIALS}</span>
                 </div>
-                <span style={{ color: 'white', fontSize: '18px', fontWeight: 800, letterSpacing: '-0.04em', fontFamily: 'Satoshi, sans-serif' }}>SNEAKRX</span>
+                <span style={{ color: 'white', fontSize: '18px', fontWeight: 800, letterSpacing: '-0.04em', fontFamily: 'Satoshi, sans-serif' }}>{SITE_NAME}</span>
               </div>
               <button
                 onClick={handleFinish}
                 style={{ color: 'rgba(255,255,255,0.5)', fontSize: '14px', fontWeight: 500 }}
               >
-                Skip
+                Pular
               </button>
             </div>
 
-            {/* Bottom: text content */}
             <div>
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -107,7 +104,7 @@ export function Onboarding() {
                 transition={{ delay: 0.15 }}
               >
                 <span
-                  className="inline-block px-3 py-1.5 rounded-full mb-4"
+                  className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full mb-4"
                   style={{
                     background: `${slide.accent}20`,
                     color: slide.accent,
@@ -117,6 +114,7 @@ export function Onboarding() {
                     border: `1px solid ${slide.accent}40`,
                   }}
                 >
+                  <Icon size={13} />
                   {slide.tag}
                 </span>
                 <h1
@@ -137,7 +135,6 @@ export function Onboarding() {
                 </p>
               </motion.div>
 
-              {/* Progress dots */}
               <div className="flex items-center gap-2 mt-8 mb-6">
                 {slides.map((_, i) => (
                   <motion.div
@@ -153,7 +150,6 @@ export function Onboarding() {
                 ))}
               </div>
 
-              {/* CTA */}
               <div className="flex gap-3">
                 <motion.button
                   onClick={handleNext}
@@ -161,7 +157,7 @@ export function Onboarding() {
                   className="flex-1 h-14 rounded-2xl flex items-center justify-center gap-2 text-white"
                   style={{ background: slide.accent, fontSize: '16px', fontWeight: 700, letterSpacing: '-0.02em' }}
                 >
-                  {current === slides.length - 1 ? 'Get Started' : 'Continue'}
+                  {current === slides.length - 1 ? 'Começar' : 'Continuar'}
                   <ChevronRight size={20} />
                 </motion.button>
                 {current === slides.length - 1 && (
@@ -173,7 +169,7 @@ export function Onboarding() {
                     className="h-14 px-6 rounded-2xl flex items-center justify-center"
                     style={{ background: 'rgba(255,255,255,0.1)', color: 'white', fontSize: '15px', fontWeight: 600, border: '1px solid rgba(255,255,255,0.15)' }}
                   >
-                    Sign In
+                    Entrar
                   </motion.button>
                 )}
               </div>

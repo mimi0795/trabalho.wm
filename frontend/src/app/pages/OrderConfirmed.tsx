@@ -7,7 +7,7 @@ import confetti from 'canvas-confetti';
 export function OrderConfirmed() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const orderNumber = searchParams.get('order') || sessionStorage.getItem('lastOrderId') || `SNX-${Math.random().toString(36).toUpperCase().slice(2, 9)}`;
+  const orderNumber = searchParams.get('order') || sessionStorage.getItem('lastOrderId') || `PP-${Math.random().toString(36).toUpperCase().slice(2, 9)}`;
   const [step, setStep] = useState(0);
 
   useEffect(() => {
@@ -26,16 +26,15 @@ export function OrderConfirmed() {
   }, []);
 
   const trackingSteps = [
-    { icon: CheckCircle, label: 'Order Confirmed', time: 'Just now', done: true },
-    { icon: Package, label: 'Processing & Authentication', time: 'Est. 1-2 hours', done: step >= 1 },
-    { icon: Truck, label: 'Shipped', time: 'Est. tomorrow', done: step >= 2 },
-    { icon: Home, label: 'Delivered', time: 'Est. 2-3 days', done: false },
+    { icon: CheckCircle, label: 'Pedido confirmado', time: 'Agora mesmo', done: true },
+    { icon: Package, label: 'Processamento e autenticação', time: 'Estimativa: 1 a 2 horas', done: step >= 1 },
+    { icon: Truck, label: 'Enviado', time: 'Estimativa: amanhã', done: step >= 2 },
+    { icon: Home, label: 'Entregue', time: 'Estimativa: 2 a 3 dias', done: false },
   ];
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-5 py-12" style={{ background: 'var(--background)' }}>
       <div className="max-w-md w-full text-center">
-        {/* Success icon */}
         <motion.div
           initial={{ scale: 0, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
@@ -52,20 +51,19 @@ export function OrderConfirmed() {
           transition={{ delay: 0.4 }}
         >
           <p style={{ fontSize: '12px', fontWeight: 700, letterSpacing: '0.08em', color: '#00C853', marginBottom: 8 }}>
-            ORDER CONFIRMED
+            PEDIDO CONFIRMADO
           </p>
           <h1 style={{ fontFamily: 'Satoshi, sans-serif', letterSpacing: '-0.04em', lineHeight: 1.1, marginBottom: 8 }}>
-            You're all set!
+            Tudo certo!
           </h1>
           <p style={{ color: 'var(--foreground-muted)', fontSize: '15px', lineHeight: 1.6, marginBottom: 6 }}>
-            Your order has been placed and will be authenticated before shipping.
+            Seu pedido foi recebido e será autenticado antes do envio.
           </p>
           <p style={{ fontSize: '14px', fontWeight: 700 }}>
-            Order: <span style={{ color: 'var(--brand-accent)' }}>{orderNumber}</span>
+            Pedido: <span style={{ color: 'var(--brand-accent)' }}>{orderNumber}</span>
           </p>
         </motion.div>
 
-        {/* Tracking */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -74,7 +72,7 @@ export function OrderConfirmed() {
           style={{ background: 'var(--card)', border: '1px solid var(--card-border)', boxShadow: 'var(--shadow-md)' }}
         >
           <p style={{ fontSize: '13px', fontWeight: 700, letterSpacing: '0.04em', color: 'var(--foreground-muted)', marginBottom: 16 }}>
-            LIVE TRACKING
+            ACOMPANHAMENTO
           </p>
           <div className="relative space-y-0">
             {trackingSteps.map(({ icon: Icon, label, time, done }, i) => (
@@ -104,7 +102,6 @@ export function OrderConfirmed() {
           </div>
         </motion.div>
 
-        {/* Actions */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -116,14 +113,14 @@ export function OrderConfirmed() {
             className="w-full h-12 rounded-2xl text-white flex items-center justify-center gap-2"
             style={{ background: 'var(--foreground)', fontSize: '15px', fontWeight: 700 }}
           >
-            Continue Shopping <ArrowRight size={18} />
+            Continuar comprando <ArrowRight size={18} />
           </button>
           <button
-            onClick={() => navigate('/profile')}
+            onClick={() => navigate('/profile/pedidos')}
             className="w-full h-12 rounded-2xl"
             style={{ background: 'var(--secondary)', border: '1px solid var(--border)', fontSize: '15px', fontWeight: 600 }}
           >
-            View Order History
+            Ver histórico de pedidos
           </button>
         </motion.div>
       </div>

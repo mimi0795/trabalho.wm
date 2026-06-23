@@ -14,8 +14,10 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
   const data = await response.json().catch(() => ({}));
 
   if (!response.ok) {
-    const message = data?.error?.message || 'Request failed';
-    throw new Error(message);
+    const message = data?.error?.message || 'A requisição falhou';
+    const details = Array.isArray(data?.error?.details) ? data.error.details : [];
+    const detailText = details.length > 0 ? `: ${details.join('; ')}` : '';
+    throw new Error(`${message}${detailText}`);
   }
 
   return data as T;
@@ -54,6 +56,23 @@ export interface CreateOrderPayload {
 export interface CreatedOrder {
   id: string;
   status: string;
+  createdAt?: string;
+  customer?: {
+    name: string;
+    email: string;
+  };
+  shippingMethod?: string;
+  paymentMethod?: string;
+  items?: Array<{
+    productId: string;
+    name: string;
+    brand: string;
+    size: number;
+    color: string;
+    quantity: number;
+    unitPrice: number;
+    subtotal: number;
+  }>;
   totals: {
     subtotal: number;
     shipping: number;
@@ -74,6 +93,7 @@ export const api = {
       method: 'POST',
       body: JSON.stringify(payload),
     }),
+  listOrders: () => request<{ count: number; orders: CreatedOrder[] }>('/orders'),
 };
 
 export function cartItemsToOrderItems(items: CartItem[]) {

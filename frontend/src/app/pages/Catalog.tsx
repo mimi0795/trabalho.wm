@@ -4,15 +4,16 @@ import { motion, AnimatePresence } from 'motion/react';
 import { SlidersHorizontal, X, ChevronDown, Grid2X2, LayoutList } from 'lucide-react';
 import { ProductCard } from '../components/ProductCard';
 import { products, brands, categories, priceRanges } from '../data/products';
+import { formatNumber, translateCategory } from '../lib/locale';
 
 type SortKey = 'popular' | 'newest' | 'price-asc' | 'price-desc' | 'rating';
 
 const sortOptions: { value: SortKey; label: string }[] = [
-  { value: 'popular', label: 'Most Popular' },
-  { value: 'newest', label: 'Newest First' },
-  { value: 'price-asc', label: 'Price: Low to High' },
-  { value: 'price-desc', label: 'Price: High to Low' },
-  { value: 'rating', label: 'Highest Rated' },
+  { value: 'popular', label: 'Mais populares' },
+  { value: 'newest', label: 'Mais recentes' },
+  { value: 'price-asc', label: 'Menor preço' },
+  { value: 'price-desc', label: 'Maior preço' },
+  { value: 'rating', label: 'Melhor avaliação' },
 ];
 
 export function Catalog() {
@@ -72,18 +73,17 @@ export function Catalog() {
     <div className="space-y-6">
       {activeFilterCount > 0 && (
         <button onClick={clearAll} className="flex items-center gap-2 px-3 py-1.5 rounded-sm" style={{ background: 'rgba(180,35,42,0.08)', color: 'var(--brand-error)', fontSize: '13px', fontWeight: 600 }}>
-          <X size={14} /> Clear all ({activeFilterCount})
+          <X size={14} /> Limpar tudo ({activeFilterCount})
         </button>
       )}
 
-      {/* Quick filters */}
       <div>
-        <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.06em', color: 'var(--foreground-muted)' }} className="mb-3">QUICK FILTERS</p>
+        <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.06em', color: 'var(--foreground-muted)' }} className="mb-3">FILTROS RÁPIDOS</p>
         <div className="flex flex-wrap gap-2">
           {[
-            { label: 'New Arrivals', active: showNewOnly, onToggle: () => setShowNewOnly(s => !s) },
-            { label: 'Exclusive', active: showExclusiveOnly, onToggle: () => setShowExclusiveOnly(s => !s) },
-            { label: 'On Sale', active: showSaleOnly, onToggle: () => setShowSaleOnly(s => !s) },
+            { label: 'Novidades', active: showNewOnly, onToggle: () => setShowNewOnly(s => !s) },
+            { label: 'Exclusivos', active: showExclusiveOnly, onToggle: () => setShowExclusiveOnly(s => !s) },
+            { label: 'Promoção', active: showSaleOnly, onToggle: () => setShowSaleOnly(s => !s) },
           ].map(({ label, active, onToggle }) => (
             <button
               key={label}
@@ -103,9 +103,8 @@ export function Catalog() {
         </div>
       </div>
 
-      {/* Brands */}
       <div>
-        <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.06em', color: 'var(--foreground-muted)' }} className="mb-3">BRAND</p>
+        <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.06em', color: 'var(--foreground-muted)' }} className="mb-3">MARCA</p>
         <div className="space-y-2">
           {brands.map(brand => (
             <label key={brand} className="flex items-center gap-3 cursor-pointer">
@@ -127,9 +126,8 @@ export function Catalog() {
         </div>
       </div>
 
-      {/* Categories */}
       <div>
-        <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.06em', color: 'var(--foreground-muted)' }} className="mb-3">CATEGORY</p>
+        <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.06em', color: 'var(--foreground-muted)' }} className="mb-3">CATEGORIA</p>
         <div className="space-y-2">
           {categories.map(cat => (
             <label key={cat} className="flex items-center gap-3 cursor-pointer">
@@ -145,15 +143,14 @@ export function Catalog() {
               >
                 {selectedCategories.includes(cat) && <span style={{ color: 'white', fontSize: '11px' }}>✓</span>}
               </div>
-              <span style={{ fontSize: '14px', fontWeight: 500 }}>{cat}</span>
+              <span style={{ fontSize: '14px', fontWeight: 500 }}>{translateCategory(cat)}</span>
             </label>
           ))}
         </div>
       </div>
 
-      {/* Price */}
       <div>
-        <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.06em', color: 'var(--foreground-muted)' }} className="mb-3">PRICE RANGE</p>
+        <p style={{ fontSize: '11px', fontWeight: 700, letterSpacing: '0.06em', color: 'var(--foreground-muted)' }} className="mb-3">FAIXA DE PREÇO</p>
         <div className="space-y-2">
           {priceRanges.map(range => {
             const active = priceRange[0] === range.min && priceRange[1] === range.max;
@@ -187,7 +184,6 @@ export function Catalog() {
 
   return (
     <div className="max-w-7xl mx-auto px-5 lg:px-10 py-6">
-      {/* Toolbar */}
       <div className="flex items-center justify-between mb-6 gap-3">
         <div className="flex items-center gap-2">
           <motion.button
@@ -203,7 +199,7 @@ export function Catalog() {
             }}
           >
             <SlidersHorizontal size={16} />
-            Filters
+            Filtros
             {activeFilterCount > 0 && (
               <span className="w-5 h-5 rounded-full bg-white text-[var(--brand-accent)] flex items-center justify-center" style={{ fontSize: '11px', fontWeight: 700 }}>
                 {activeFilterCount}
@@ -212,12 +208,11 @@ export function Catalog() {
           </motion.button>
 
           <p style={{ fontSize: '13px', color: 'var(--foreground-muted)', fontWeight: 500 }}>
-            {filtered.length} sneakers
+            {formatNumber(filtered.length)} tênis
           </p>
         </div>
 
         <div className="flex items-center gap-2">
-          {/* Sort */}
           <div className="relative">
             <select
               value={sort}
@@ -230,7 +225,6 @@ export function Catalog() {
             <ChevronDown size={14} className="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" style={{ color: 'var(--foreground-muted)' }} />
           </div>
 
-          {/* Grid toggle */}
           <div className="hidden lg:flex rounded-2xl overflow-hidden" style={{ border: '1px solid var(--border)' }}>
             {[{ mode: 'grid', Icon: Grid2X2 }, { mode: 'list', Icon: LayoutList }].map(({ mode, Icon }) => (
               <button
@@ -247,7 +241,6 @@ export function Catalog() {
       </div>
 
       <div className="flex gap-8">
-        {/* Desktop filter sidebar */}
         <AnimatePresence>
           {showFilters && (
             <motion.aside
@@ -264,15 +257,14 @@ export function Catalog() {
           )}
         </AnimatePresence>
 
-        {/* Grid */}
         <div className="flex-1 min-w-0">
           {filtered.length === 0 ? (
             <div className="text-center py-24">
-              <p style={{ fontSize: '3rem' }}>👟</p>
-              <h3 style={{ fontFamily: 'Satoshi, sans-serif', marginTop: 12, marginBottom: 8 }}>No sneakers found</h3>
-              <p style={{ color: 'var(--foreground-muted)', fontSize: '15px' }}>Try adjusting your filters</p>
+              <p style={{ fontSize: '3rem' }}>⌕</p>
+              <h3 style={{ fontFamily: 'Satoshi, sans-serif', marginTop: 12, marginBottom: 8 }}>Nenhum tênis encontrado</h3>
+              <p style={{ color: 'var(--foreground-muted)', fontSize: '15px' }}>Tente ajustar os filtros</p>
               <button onClick={clearAll} className="mt-6 px-6 h-11 rounded-2xl text-white" style={{ background: 'var(--foreground)', fontSize: '14px', fontWeight: 700 }}>
-                Clear Filters
+                Limpar filtros
               </button>
             </div>
           ) : (
@@ -292,7 +284,6 @@ export function Catalog() {
         </div>
       </div>
 
-      {/* Mobile filter drawer */}
       <AnimatePresence>
         {showFilters && (
           <>
@@ -313,7 +304,7 @@ export function Catalog() {
               style={{ background: 'var(--card)', maxHeight: '85vh', paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 24px)' }}
             >
               <div className="flex items-center justify-between mb-6">
-                <h3 style={{ fontFamily: 'Satoshi, sans-serif' }}>Filters</h3>
+                <h3 style={{ fontFamily: 'Satoshi, sans-serif' }}>Filtros</h3>
                 <button onClick={() => setShowFilters(false)} className="w-8 h-8 rounded-full flex items-center justify-center" style={{ background: 'var(--secondary)' }}>
                   <X size={16} />
                 </button>
@@ -324,7 +315,7 @@ export function Catalog() {
                 className="w-full h-12 rounded-2xl text-white mt-6"
                 style={{ background: 'var(--foreground)', fontSize: '15px', fontWeight: 700 }}
               >
-                Show {filtered.length} results
+                Mostrar {formatNumber(filtered.length)} resultados
               </button>
             </motion.div>
           </>

@@ -4,6 +4,7 @@ import { Heart, ShoppingBag, Trash2 } from 'lucide-react';
 import { useApp } from '../store/AppContext';
 import { products } from '../data/products';
 import { ProductCard } from '../components/ProductCard';
+import { formatNumber } from '../lib/locale';
 
 export function Wishlist() {
   const { state, toggleWishlist, addToCart } = useApp();
@@ -23,9 +24,9 @@ export function Wishlist() {
             >
               <Heart size={40} style={{ color: 'var(--brand-error)' }} />
             </motion.div>
-            <h2 style={{ fontFamily: 'Satoshi, sans-serif' }}>Your wishlist is empty</h2>
+            <h2 style={{ fontFamily: 'Satoshi, sans-serif' }}>Sua lista de favoritos está vazia</h2>
             <p style={{ color: 'var(--foreground-muted)', fontSize: '15px', marginTop: 8, marginBottom: 24 }}>
-              Save your dream pairs and never lose track
+              Salve seus pares favoritos para encontrá-los depois
             </p>
             <motion.button
               whileTap={{ scale: 0.97 }}
@@ -33,21 +34,21 @@ export function Wishlist() {
               className="px-8 h-12 rounded-2xl text-white"
               style={{ background: 'var(--foreground)', fontSize: '15px', fontWeight: 700 }}
             >
-              Browse Sneakers
+              Ver catálogo
             </motion.button>
           </div>
         ) : (
           <>
             <div className="flex items-center justify-between mb-6">
               <p style={{ fontSize: '13px', color: 'var(--foreground-muted)', fontWeight: 600 }}>
-                {wishlistedProducts.length} saved item{wishlistedProducts.length !== 1 ? 's' : ''}
+                {formatNumber(wishlistedProducts.length)} {wishlistedProducts.length === 1 ? 'item salvo' : 'itens salvos'}
               </p>
               <button
                 onClick={() => state.wishlist.forEach(id => toggleWishlist(id))}
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-full"
                 style={{ background: 'rgba(180,35,42,0.08)', color: 'var(--brand-error)', fontSize: '13px', fontWeight: 600 }}
               >
-                <Trash2 size={13} /> Clear all
+                <Trash2 size={13} /> Limpar tudo
               </button>
             </div>
 
@@ -74,7 +75,7 @@ export function Wishlist() {
                         className="w-full h-10 rounded-xl text-white flex items-center justify-center gap-2"
                         style={{ background: 'var(--foreground)', fontSize: '13px', fontWeight: 700 }}
                       >
-                        <ShoppingBag size={15} /> Quick Add
+                        <ShoppingBag size={15} /> Adicionar rápido
                       </motion.button>
                     </div>
                   </motion.div>

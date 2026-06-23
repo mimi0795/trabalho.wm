@@ -4,13 +4,24 @@ import { Header } from './Header';
 import { BottomNav } from './BottomNav';
 
 const headerConfig: Record<string, { title?: string; showBack?: boolean }> = {
-  '/catalog': { title: 'Browse' },
-  '/search': { title: 'Search' },
-  '/cart': { title: 'My Cart', showBack: true },
-  '/checkout': { title: 'Checkout', showBack: true },
-  '/order-confirmed': { title: 'Order Placed' },
-  '/profile': { title: 'Profile' },
-  '/wishlist': { title: 'Wishlist' },
+  '/catalog': { title: 'Catálogo' },
+  '/search': { title: 'Busca' },
+  '/cart': { title: 'Minha sacola', showBack: true },
+  '/checkout': { title: 'Finalizar compra', showBack: true },
+  '/order-confirmed': { title: 'Pedido confirmado' },
+  '/profile': { title: 'Perfil' },
+  '/wishlist': { title: 'Favoritos' },
+};
+
+const profileSectionTitles: Record<string, string> = {
+  pedidos: 'Histórico de pedidos',
+  favoritos: 'Favoritos',
+  pagamentos: 'Formas de pagamento',
+  notificacoes: 'Notificações',
+  autenticacao: 'Autenticação',
+  configuracoes: 'Configurações',
+  ajuda: 'Central de ajuda',
+  avaliar: 'Avaliar Passo Prime',
 };
 
 const noHeader = ['/onboarding', '/auth/login', '/auth/register'];
@@ -20,10 +31,15 @@ export function Root() {
   const location = useLocation();
 
   const isProductPage = location.pathname.startsWith('/product/');
+  const profileSection = location.pathname.startsWith('/profile/')
+    ? location.pathname.split('/')[2]
+    : '';
   const showHeader = !noHeader.some(p => location.pathname.startsWith(p));
   const showBottomNav = !noBottomNav.some(p => location.pathname.startsWith(p));
   const config = isProductPage
     ? { showBack: true }
+    : profileSection
+      ? { title: profileSectionTitles[profileSection] ?? 'Perfil', showBack: true }
     : headerConfig[location.pathname] ?? {};
 
   return (

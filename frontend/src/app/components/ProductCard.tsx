@@ -3,6 +3,7 @@ import { Heart, Star } from 'lucide-react';
 import { motion } from 'motion/react';
 import type { Product } from '../data/products';
 import { useApp } from '../store/AppContext';
+import { formatCurrency, formatNumber, formatRating } from '../lib/locale';
 
 interface ProductCardProps {
   product: Product;
@@ -36,14 +37,14 @@ export function ProductCard({ product, variant = 'default' }: ProductCardProps) 
                 className="absolute top-2.5 left-2.5 px-2 py-0.5 rounded-sm text-white"
                 style={{ fontSize: '10px', fontWeight: 700, background: 'var(--foreground)', letterSpacing: '0.04em' }}
               >
-                NEW
+                NOVO
               </span>
             )}
           </div>
           <div className="p-3">
             <p style={{ fontSize: '11px', color: 'var(--foreground-muted)', fontWeight: 500 }}>{product.brand}</p>
             <p style={{ fontSize: '13px', fontWeight: 600, letterSpacing: '-0.02em' }} className="truncate mt-0.5">{product.name}</p>
-            <p style={{ fontSize: '14px', fontWeight: 700, letterSpacing: '-0.02em' }} className="mt-1">${product.price}</p>
+            <p style={{ fontSize: '14px', fontWeight: 700, letterSpacing: '-0.02em' }} className="mt-1">{formatCurrency(product.price)}</p>
           </div>
         </motion.div>
       </Link>
@@ -78,7 +79,7 @@ export function ProductCard({ product, variant = 'default' }: ProductCardProps) 
                   className="px-2.5 py-1 rounded-sm text-white"
                   style={{ fontSize: '10px', fontWeight: 700, background: 'var(--foreground)', letterSpacing: '0.04em' }}
                 >
-                  NEW
+                  NOVO
                 </span>
               )}
               {product.isExclusive && (
@@ -86,7 +87,7 @@ export function ProductCard({ product, variant = 'default' }: ProductCardProps) 
                   className="px-2.5 py-1 rounded-sm"
                   style={{ fontSize: '10px', fontWeight: 700, background: 'rgba(17,17,17,0.82)', color: '#E7E4DF', letterSpacing: '0.04em' }}
                 >
-                  EXCL
+                  EXCLUSIVO
                 </span>
               )}
               {discount > 0 && (
@@ -129,14 +130,14 @@ export function ProductCard({ product, variant = 'default' }: ProductCardProps) 
             </div>
             <div className="flex items-center gap-1 mt-2">
               <Star size={11} fill="#FFB800" stroke="none" />
-              <span style={{ fontSize: '12px', fontWeight: 600 }}>{product.rating}</span>
-              <span style={{ fontSize: '11px', color: 'var(--foreground-muted)' }}>({product.reviewCount.toLocaleString()})</span>
+              <span style={{ fontSize: '12px', fontWeight: 600 }}>{formatRating(product.rating)}</span>
+              <span style={{ fontSize: '11px', color: 'var(--foreground-muted)' }}>({formatNumber(product.reviewCount)})</span>
             </div>
             <div className="flex items-center gap-2 mt-2">
-              <span style={{ fontSize: '16px', fontWeight: 800, letterSpacing: '-0.03em' }}>${product.price}</span>
+              <span style={{ fontSize: '16px', fontWeight: 800, letterSpacing: '-0.03em' }}>{formatCurrency(product.price)}</span>
               {product.originalPrice && (
                 <span style={{ fontSize: '13px', color: 'var(--foreground-muted)', textDecoration: 'line-through' }}>
-                  ${product.originalPrice}
+                  {formatCurrency(product.originalPrice)}
                 </span>
               )}
             </div>
@@ -171,12 +172,12 @@ export function ProductCard({ product, variant = 'default' }: ProductCardProps) 
           <div className="absolute top-3 left-3 flex gap-1.5 flex-wrap">
             {product.isNew && (
               <span className="px-2.5 py-1 rounded-sm text-white" style={{ fontSize: '10px', fontWeight: 700, background: 'var(--foreground)', letterSpacing: '0.05em' }}>
-                NEW
+                NOVO
               </span>
             )}
             {product.isExclusive && (
               <span className="px-2.5 py-1 rounded-sm" style={{ fontSize: '10px', fontWeight: 700, background: 'rgba(17,17,17,0.82)', color: '#E7E4DF', letterSpacing: '0.05em' }}>
-                EXCL
+                EXCLUSIVO
               </span>
             )}
             {discount > 0 && (
@@ -215,15 +216,15 @@ export function ProductCard({ product, variant = 'default' }: ProductCardProps) 
           </p>
           <div className="flex items-center gap-1.5 mt-1.5">
             <Star size={12} fill="#FFB800" stroke="none" />
-            <span style={{ fontSize: '12px', fontWeight: 600 }}>{product.rating}</span>
-            <span style={{ fontSize: '11px', color: 'var(--foreground-muted)' }}>({product.reviewCount.toLocaleString()})</span>
+            <span style={{ fontSize: '12px', fontWeight: 600 }}>{formatRating(product.rating)}</span>
+            <span style={{ fontSize: '11px', color: 'var(--foreground-muted)' }}>({formatNumber(product.reviewCount)})</span>
           </div>
           <div className="flex items-center justify-between mt-3">
             <div className="flex items-center gap-2">
-              <span style={{ fontSize: '18px', fontWeight: 800, letterSpacing: '-0.03em' }}>${product.price}</span>
+              <span style={{ fontSize: '18px', fontWeight: 800, letterSpacing: '-0.03em' }}>{formatCurrency(product.price)}</span>
               {product.originalPrice && (
                 <span style={{ fontSize: '13px', color: 'var(--foreground-muted)', textDecoration: 'line-through' }}>
-                  ${product.originalPrice}
+                  {formatCurrency(product.originalPrice)}
                 </span>
               )}
             </div>

@@ -4,11 +4,11 @@ import { motion } from 'motion/react';
 import { useApp } from '../../store/AppContext';
 
 const navItems = [
-  { to: '/', icon: Home, label: 'Home' },
-  { to: '/search', icon: Search, label: 'Search' },
-  { to: '/catalog', icon: Grid3X3, label: 'Browse' },
-  { to: '/wishlist', icon: Heart, label: 'Saved' },
-  { to: '/profile', icon: User, label: 'Profile' },
+  { to: '/', icon: Home, label: 'Início' },
+  { to: '/search', icon: Search, label: 'Buscar' },
+  { to: '/catalog', icon: Grid3X3, label: 'Catálogo' },
+  { to: '/wishlist', icon: Heart, label: 'Salvos' },
+  { to: '/profile', icon: User, label: 'Perfil' },
 ];
 
 export function BottomNav() {
@@ -103,7 +103,7 @@ export function BottomNav() {
                 letterSpacing: '-0.01em',
               }}
             >
-              Cart
+              Sacola
             </span>
           </motion.div>
         </NavLink>

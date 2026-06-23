@@ -1,34 +1,56 @@
 
-# Premium Sneaker Ecommerce App
+# Passo Prime
 
-This project is split into two workspaces:
+Este projeto está dividido em dois workspaces:
 
-- `frontend`: Vite + React ecommerce app.
-- `backend`: Node.js API server.
+- `frontend`: app de e-commerce em Vite + React.
+- `backend`: servidor de API em Node.js.
 
-## Running the code
+## Rodando o projeto
 
-Install dependencies from the project root:
+Instale as dependências pela raiz do projeto:
 
 ```bash
 npm install
 ```
 
-Start the frontend:
+Configure o backend:
+
+```powershell
+Copy-Item backend/.env.example backend/.env
+```
+
+O backend usa MongoDB. Por padrão ele tenta conectar em `mongodb://127.0.0.1:27017` no banco `passo_prime`.
+Você pode trocar isso em `backend/.env`:
+
+```bash
+MONGODB_URI=mongodb://127.0.0.1:27017
+MONGODB_DB=passo_prime
+```
+
+Suba o MongoDB local com Docker:
+
+```powershell
+docker compose up -d mongodb
+```
+
+Ao iniciar, a API cria os índices e popula o banco com produtos, categorias, variações e promoções iniciais baseados no diagrama do projeto.
+
+Inicie o frontend:
 
 ```bash
 npm run dev
 ```
 
-Start the backend:
+Inicie o backend:
 
 ```bash
 npm run dev:backend
 ```
 
-The backend API runs on `http://localhost:5000/api` by default.
+A API do backend roda em `http://localhost:5000/api` por padrão.
 
-Available API routes:
+Rotas disponíveis:
 
 - `GET /api/health`
 - `GET /api/products`
@@ -36,8 +58,9 @@ Available API routes:
 - `POST /api/orders`
 - `GET /api/orders`
 - `POST /api/newsletter`
+- `POST /api/support`
 
-Build the frontend:
+Gere o build do frontend:
 
 ```bash
 npm run build

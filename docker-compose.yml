@@ -1,0 +1,14 @@
+services:
+  mongodb:
+    image: mongo:7
+    container_name: passo-prime-mongodb
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_DATABASE: passo_prime
+    volumes:
+      - passo_prime_mongo_data:/data/db
+
+volumes:
+  passo_prime_mongo_data:
