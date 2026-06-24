@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { RouterProvider } from 'react-router';
-import { router } from './routes';
-import { AppProvider } from './store/AppContext';
+import { router } from './app/routes';
+import { AppProvider } from './app/store/AppContext';
 
 export default function App() {
 
