@@ -31,18 +31,24 @@ export async function connectDatabase() {
   const uri = process.env.MONGODB_URI || DEFAULT_MONGODB_URI;
   const dbName = process.env.MONGODB_DB || DEFAULT_DATABASE_NAME;
 
+  console.log('MONGODB_URI:', uri);
+
   client = new MongoClient(uri, {
     serverSelectionTimeoutMS: Number(process.env.MONGODB_TIMEOUT_MS || 5000),
   });
 
   await client.connect();
+
   database = client.db(dbName);
+
   await database.command({ ping: 1 });
+
   await createIndexes();
   await seedDatabase();
 
   return database;
 }
+
 
 export async function closeDatabase() {
   if (client) await client.close();

@@ -180,7 +180,7 @@ async function start() {
     });
   } catch (error) {
     console.error('Não foi possível conectar ao MongoDB.');
-    console.error(error.message || error);
+    console.error(error);
     console.error('Defina MONGODB_URI no backend/.env ou inicie um MongoDB local em mongodb://127.0.0.1:27017.');
     process.exitCode = 1;
   }
