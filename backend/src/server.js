@@ -60,10 +60,7 @@ function readBody(req) {
     });
 
     req.on('end', () => {
-      if (!body) {
-        resolve({});
-        return;
-      }
+      if (!body) return resolve({});
 
       try {
         resolve(JSON.parse(body));
@@ -85,6 +82,16 @@ const server = createServer(async (req, res) => {
       return;
     }
 
+    // ROTA RAIZ (SEU LINK PUBLICO)
+    if (req.method === 'GET' && url.pathname === '/') {
+      sendJson(res, 200, {
+        status: 'ok',
+        message: 'API funcionando',
+      });
+      return;
+    }
+
+    // HEALTH CHECK
     if (req.method === 'GET' && url.pathname === '/api/health') {
       sendJson(res, 200, {
         status: 'ok',
@@ -96,6 +103,7 @@ const server = createServer(async (req, res) => {
       return;
     }
 
+    // PRODUTOS LISTA
     if (req.method === 'GET' && url.pathname === '/api/products') {
       const products = await listProducts(url.searchParams);
       sendJson(res, 200, {
@@ -105,20 +113,25 @@ const server = createServer(async (req, res) => {
       return;
     }
 
+    // PRODUTO POR ID
     if (req.method === 'GET' && url.pathname.startsWith('/api/products/')) {
       const id = url.pathname.split('/').pop();
       const product = await getProductById(id);
+
       if (!product) {
         sendError(res, 404, 'Produto não encontrado');
         return;
       }
+
       sendJson(res, 200, { product });
       return;
     }
 
+    // PEDIDOS
     if (req.method === 'POST' && url.pathname === '/api/orders') {
       const payload = await readBody(req);
       const { errors, productsById } = await validateOrder(payload);
+
       if (errors.length > 0) {
         sendError(res, 422, 'Falha na validação do pedido', errors);
         return;
@@ -131,10 +144,14 @@ const server = createServer(async (req, res) => {
 
     if (req.method === 'GET' && url.pathname === '/api/orders') {
       const orders = await listOrders();
-      sendJson(res, 200, { count: orders.length, orders });
+      sendJson(res, 200, {
+        count: orders.length,
+        orders,
+      });
       return;
     }
 
+    // NEWSLETTER
     if (req.method === 'POST' && url.pathname === '/api/newsletter') {
       const payload = await readBody(req);
       const email = String(payload.email || '').trim().toLowerCase();
@@ -149,12 +166,15 @@ const server = createServer(async (req, res) => {
       return;
     }
 
+    // SUPORTE
     if (req.method === 'POST' && url.pathname === '/api/support') {
       const payload = await readBody(req);
+
       if (!payload?.subject && !payload?.assunto) {
         sendError(res, 422, 'Informe o assunto do atendimento');
         return;
       }
+
       if (!payload?.message && !payload?.mensagem) {
         sendError(res, 422, 'Informe a mensagem do atendimento');
         return;
@@ -165,6 +185,7 @@ const server = createServer(async (req, res) => {
       return;
     }
 
+    // ROTA NÃO ENCONTRADA
     sendError(res, 404, 'Rota não encontrada');
   } catch (error) {
     sendError(res, 500, error.message || 'Erro inesperado no servidor');
@@ -174,6 +195,7 @@ const server = createServer(async (req, res) => {
 async function start() {
   try {
     await connectDatabase();
+
     server.listen(PORT, () => {
       console.log(`Backend rodando em http://localhost:${PORT}`);
       console.log(`MongoDB conectado ao banco ${getDatabaseInfo().name}`);
@@ -181,7 +203,7 @@ async function start() {
   } catch (error) {
     console.error('Não foi possível conectar ao MongoDB.');
     console.error(error);
-    console.error('Defina MONGODB_URI no backend/.env ou inicie um MongoDB local em mongodb://127.0.0.1:27017.');
+    console.error('Defina MONGODB_URI no backend/.env ou use Mongo local.');
     process.exitCode = 1;
   }
 }
